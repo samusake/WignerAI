@@ -4,9 +4,9 @@ lxs=linspace(-xmax,xmax,nxs);
 [xs,ys]=meshgrid(lxs);
 w=wnm(0,0,lxs)+wnm(1,0,lxs)+wnm(0,1,lxs)+wnm(1,1,lxs);
 w=imrotate(real(w),0,'bilinear','crop');
-vx=0.2;
+vx=0.2;%squeezing
 vy=1/vx;
-wg=exp(-xs.^2/2/vx-ys.^2/2/vy);
+wg=exp(-xs.^2/2/vx-ys.^2/2/vy); 
 wg=wg./sum(sum(wg));
 mesh(xs,ys,wg)
 axis square
@@ -15,7 +15,7 @@ axis square
 prdx=sum(w,2);
 prdx=prdx/sum(prdx);
 size(prdx)
-cprdx=cumsum(prdx);
+cprdx=cumsum(prdx); %cumulant
 plot(lxs,cprdx);
 %%
 N=100000;
