@@ -74,7 +74,7 @@ def sample(cum,xaxis,N):
     return(hist)
 
 def prepareExpData(expdata, nDatapoints): 
-    #ToDo:
+    #ToDo:gaussian_kde(x)
     #use kerneldensity estimation to get probabillity distribution to get X equispaced Datapoints
     return(0)
 
@@ -87,7 +87,7 @@ fig=plt.figure()
 ax=fig.add_subplot(111,projection='3d')
 
 
-nxs=31
+nxs=101
 xmax=5
 lxs=np.linspace(-xmax, xmax, nxs)
 [xs, ys]=np.meshgrid(lxs,lxs);
@@ -97,7 +97,7 @@ w=wnm(0,0,lxs)+wnm(1,0,lxs)+wnm(0,1,lxs)+wnm(1,1,lxs)
 ax.plot_surface(xs,ys,np.real(w), rstride=1, cstride=1, cmap='viridis', edgecolor='none')
 #%%
 probdx=probdist(w,0)
-#xaxis2, probdx2=equispacedPoints(probdx,lxs,30)
+xaxis2, probdx2=equispacedPoints(probdx,lxs,20)
 plt.plot(lxs, probdx, xaxis2, probdx2)
 
 
@@ -108,7 +108,7 @@ plt.plot(lxs, cumdx)
 plt.show()
 
 #%%
-histsample=sample(cumdx,lxs,10000)
+histsample=sample(cumdx,lxs,100000)
 plt.plot(lxs,histsample,lxs,probdx)
 plt.show()
 #%%
