@@ -7,7 +7,6 @@ Created on Mon Apr 29 13:09:10 2019
 """
 import numpy as np
 from scipy.special import factorial
-from scipy.misc import imrotate
 from scipy.interpolate import interp1d
 from scipy.stats import gaussian_kde
 
@@ -67,7 +66,7 @@ def randomWignerMatrix(N, xaxis):
     w=np.zeros((nxs,nxs))
     for i in range(0,N):
         for j in range(0,N):
-            w=w+rho[i,j]*wnm(i,j,lxs)
+            w=w+rho[i,j]*wnm(i,j,xaxis)
     w=np.real(w)
     return(w)
 
@@ -116,8 +115,8 @@ def generateDataset(N,s,nphi,xaxis): #N-Dimension of rho, s-Number of samples, n
     W=np.zeros((s,nxs,nxs))
     P=np.zeros((s,nphi,nxs))
     for i in range(0, s):
-        W[i]=randomWignerMatrix(N,lxs)
-        P[i]=generatePofw(W[i],lxs,nphi)
+        W[i]=randomWignerMatrix(N,xaxis)
+        P[i]=generatePofw(W[i],xaxis,nphi)
     return((P,W))
 
 #%%
