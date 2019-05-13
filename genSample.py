@@ -1,10 +1,6 @@
  #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Mon Apr 29 13:09:10 2019
 
-@author: samu
-"""
 import numpy as np
 from scipy.special import factorial
 from scipy.interpolate import interp1d
