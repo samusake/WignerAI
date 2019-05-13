@@ -36,8 +36,9 @@ class simpleDeepNN:
 class simpleConv:
     def __init__(self, nxs, nphi):
         self.model=tf.keras.Sequential()
-        self.model.add(layers.Conv2D(32, kernel_size=(5,5), strides=(1,1),
-                                       activation='linear', input_shape=(nphi,nxs)))
+        print('help0')
+        self.model.add(layers.Conv2D(32, kernel_size=(5,5), strides=(1,1),activation='linear', input_shape=(nphi,nxs)))
+        print('help1')
         self.model.add(layers.MaxPooling2D(pool_size=(2,2), strides=(2,2)))
         self.model.add(layers.Conv2D(64, (5, 5), activation='linear'))
         self.model.add(layers.MaxPooling2D(pool_size=(2, 2)))
