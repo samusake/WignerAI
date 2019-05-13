@@ -22,20 +22,26 @@ import pickle
 from genSample import *
 from model import *
 #%%
+
 N=4 #dimension of rho
-s=5000 #number of samples
+s=50000 #number of samples
 nphi=12 #number of angleSteps
 
-nxs=21
+nxs=17
 xmax=5
 lxs=np.linspace(-xmax, xmax, nxs)
 [xs, ys]=np.meshgrid(lxs,lxs);
 
 phispace=np.linspace(0,180,nphi)
 [px, py]=np.meshgrid(lxs,phispace)
-
+'''
 P, W=generateDataset(N,s,nphi,lxs)
-
+np.save('P', P)
+np.save('W', W)
+'''
+#%%
+P=np.load('P.npy')
+W=np.load('W.npy')
 #%%
 fig=plt.figure(1)
 ax=fig.add_subplot(111)
@@ -66,12 +72,15 @@ for i in range(0,len(Ptest)):
     testOut[i]=W[i].flatten()
     
 #%%
-ai=simpleDeepNN(nxs,nphi)
+#ai=simpleDeepNN(nxs,nphi)
+ai=simpleConv(nxs,nphi)
 #%%
 ai.model.compile(optimizer=tf.train.AdamOptimizer(0.001),#tf.train.GradientDescentOptimizer(0.005),#optimizer=tf.train.AdamOptimizer(0.001),
     loss='mean_squared_error')
-history=ai.model.fit(inputV, outputV, epochs=200, batch_size=32, verbose=1, validation_data=(testIn, testOut))
-
+history=ai.model.fit(inputV, outputV, epochs=1, batch_size=256, verbose=1, validation_data=(testIn, testOut))
+#%%
+#%%
+#save AI
 #%%
 plt.semilogy(history.history['loss'])
 plt.semilogy(history.history['val_loss'])
@@ -81,18 +90,17 @@ plt.xlabel('Epoch')
 plt.legend(['Train', 'Test'], loc='upper left')
 plt.show()
 #%%
-
-fig=plt.figure(5)
-ax=fig.add_subplot(111)
-ax.contourf(xs,ys,np.real(Wtest[9]),levels=15)
-ax.set_xlabel('X')
-ax.set_ylabel('Y')
-
-
-Wai=ai.model.predict(testIn)
-Wai=np.reshape(Wai,(30,nxs,nxs))
-fig=plt.figure(6)
-ax=fig.add_subplot(111)
-ax.contourf(xs,ys,Wai[9],levels=15)
-ax.set_xlabel('X')
-ax.set_ylabel('Y')
+for i in range(2,3):
+    fig=plt.figure(i)
+    ax=fig.add_subplot(111)
+    ax.contourf(xs,ys,np.real(Wtest[i]),levels=15)
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    
+    Wai=ai.model.predict(testIn)
+    Wai=np.reshape(Wai,(30,nxs,nxs))
+    fig=plt.figure(6)
+    ax=fig.add_subplot(111)
+    ax.contourf(xs,ys,Wai[i],levels=15)
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')

@@ -115,10 +115,13 @@ def generateDataset(N,s,nphi,xaxis): #N-Dimension of rho, s-Number of samples, n
     W=np.zeros((s,nxs,nxs))
     P=np.zeros((s,nphi,nxs))
     for i in range(0, s):
+        if i%100==1:
+            k=i/s*100
+            print("{0} %".format(k))
         W[i]=randomWignerMatrix(N,xaxis)
+        W[i]=sk.transform.rotate(W[i],np.random.randint(0,360),resize=False);
         P[i]=generatePofw(W[i],xaxis,nphi)
     return((P,W))
-
 #%%
 '''
 fig=plt.figure()
