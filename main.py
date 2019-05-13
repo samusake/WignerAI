@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Wed May  1 19:34:08 2019
-
-@author: herbert
-"""
 
 import numpy as np
 from scipy.special import factorial
