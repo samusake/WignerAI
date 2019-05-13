@@ -1,4 +1,4 @@
-y #!/usr/bin/env python3
+ #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Created on Mon Apr 29 13:09:10 2019
@@ -115,10 +115,13 @@ def generateDataset(N,s,nphi,xaxis): #N-Dimension of rho, s-Number of samples, n
     W=np.zeros((s,nxs,nxs))
     P=np.zeros((s,nphi,nxs))
     for i in range(0, s):
-        if i%100==1:
+        if i%100==0:
             k=i/s*100
             print("{0} %".format(k))
-        W[i]=randomWignerMatrix(N,xaxis)
+        if N==-1:
+            W[i]=randomWignerMatrix(randint(7),xaxis)
+        else:
+            W[i]=randomWignerMatrix(N,xaxis)
         W[i]=sk.transform.rotate(W[i],np.random.randint(0,360),resize=False);
         P[i]=generatePofw(W[i],xaxis,nphi)
     return((P,W))

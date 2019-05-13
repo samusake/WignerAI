@@ -24,8 +24,8 @@ from genSample import *
 from model import *
 #%%
 
-N=2 #dimension of rho
-s=200000 #number of samples
+N=4 #dimension of rho
+s=100000 #number of samples
 nphi=12 #number of angleSteps
 
 nxs=17
@@ -38,12 +38,12 @@ phispace=np.linspace(0,180,nphi)
 
 '''
 P, W=generateDataset(N,s,nphi,lxs)
-np.save('data/P200000', P)
-np.save('data/W200000', W)
+np.save('data/P100000', P)
+np.save('data/W100000', W)
 '''
 #%%
-P=np.load('data/P200000.npy')
-W=np.load('data/W200000.npy')
+P=np.load('data/P100000.npy')
+W=np.load('data/W100000.npy')
 #%%
 fig=plt.figure(1)
 ax=fig.add_subplot(111)
@@ -72,11 +72,6 @@ testOut=np.zeros((stest,nxs*nxs))
 for i in range(0,len(Ptest)):
     testIn[i]=Ptest[i].flatten()
     testOut[i]=Wtest[i].flatten()
-
-P2=np.concatenate(testIn)
-P2=np.reshape(P2,(30,nphi,nxs))
-print(mean_squared_error(Ptest[1],P2[1]))
-
 #%%
 '''
 ai=simpleConv(nxs,nphi)
@@ -101,10 +96,6 @@ plt.ylabel('Loss')
 plt.xlabel('Epoch')
 plt.legend(['Train', 'Test'], loc='upper left')
 plt.show()
-score=ai.model.evaluate(testIn, testOut, batch_size=1)
-print(score)
-t1=ai.model.predict(testIn)
-print(mean_squared_error(t1,testOut))
 #%%
 k=4
 
@@ -125,3 +116,44 @@ for i in range(k,k+1):
     ax.set_xlabel('X')
     ax.set_ylabel('Y')
 print(mean_squared_error(Wai[k],Wtest[k]))
+#%%
+Wai_orig=ai.model.predict(testIn)
+Wai=np.concatenate(Wai_orig)
+Wai=np.reshape(Wai, (30,nxs,nxs))
+
+fig, axs = plt.subplots(3, 6, figsize=(5, 5))
+
+for i in range(0,6):
+    axs[0,i].contourf(px,py,Ptest[i],levels=15)
+    axs[0,i].set_xlabel('r')
+    axs[0,i].set_ylabel('phi')
+   
+    axs[1,i].contourf(xs,ys,Wtest[i],levels=15)
+    axs[1,i].set_xlabel('X')
+    axs[1,i].set_ylabel('Y')
+
+    axs[2,i].contourf(xs,ys,Wai[i],levels=15)
+    axs[2,i].set_xlabel('X')
+    axs[2,i].set_ylabel('Y')
+axs[0,3].set_title('Probability distributions')
+axs[1,3].set_title('Theoretical wigner distribution')
+axs[2,3].set_title('AI prediction of wigner distribution')
+
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
