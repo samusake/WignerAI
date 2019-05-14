@@ -115,7 +115,7 @@ def generateDataset(N,s,nphi,xaxis): #N-Dimension of rho, s-Number of samples, n
             k=i/s*100
             print("{0} %".format(k))
         if N==-1:
-            W[i]=randomWignerMatrix(randint(7),xaxis)
+            W[i]=randomWignerMatrix(np.random.randint(2,7),xaxis)
         else:
             W[i]=randomWignerMatrix(N,xaxis)
         W[i]=sk.transform.rotate(W[i],np.random.randint(0,360),resize=False);
