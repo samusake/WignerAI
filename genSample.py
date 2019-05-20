@@ -5,6 +5,7 @@ import numpy as np
 from scipy.special import factorial
 from scipy.interpolate import interp1d
 from scipy.stats import gaussian_kde
+from scipy.ndimage.interpolation import shift
 
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -12,7 +13,7 @@ import skimage as sk
 
 from numba import jit
 import time
-
+#%%
 
 def randomDensityMatrix(dim): #http://www.qetlab.com/RandomDensityMatrix
     rho=np.random.rand(dim,dim) #https://arxiv.org/pdf/1010.3570.pdf
@@ -66,7 +67,11 @@ def randomWignerMatrix(N, xaxis):
     w=np.real(w)
     return(w)
 
-
+def randomSqueezedWigner(xs,ys):
+    vx=np.random.random()
+    vy=1/vx
+    return(np.exp(-xs**2/2./vx-ys**2/2./vy))    
+    
 def probdist(w,phi):#w-wigner-function-matrix, phi-rotationangle
     w2=sk.transform.rotate(w,phi,resize=False);
     probdist=np.sum(w2,1);
@@ -121,6 +126,44 @@ def generateDataset(N,s,nphi,xaxis): #N-Dimension of rho, s-Number of samples, n
         W[i]=sk.transform.rotate(W[i],np.random.randint(0,360),resize=False);
         P[i]=generatePofw(W[i],xaxis,nphi)
     return((P,W))
+
+def generateDatasetWithShift(N,s,nphi,xaxis): #N-Dimension of rho, s-Number of samples, nphi-angular stepsize
+    nxs=len(xaxis)    
+    W=np.zeros((s,nxs,nxs))
+    P=np.zeros((s,nphi,nxs))
+    for i in range(0, s):
+        if i%100==0:
+            k=i/s*100
+            print("{0} %".format(k))
+        if N==-1:
+            W[i]=randomWignerMatrix(np.random.randint(2,7),xaxis)
+        else:
+            W[i]=randomWignerMatrix(N,xaxis)
+        W[i]=sk.transform.rotate(W[i],np.random.randint(0,360),resize=False);
+        W[i]=shift(W[i],shift=(np.random.randint(0,nxs/4),np.random.randint(0,nxs/4)))
+        P[i]=generatePofw(W[i],xaxis,nphi)
+    return((P,W))
+def generateDatasetWithShiftAndSqueezed(N,s,nphi,xaxis):
+    nxs=len(xaxis)    
+    W=np.zeros((s,nxs,nxs))
+    P=np.zeros((s,nphi,nxs))
+    [xs, ys]=np.meshgrid(xaxis,xaxis);
+    for i in range(0, s):
+        if i%100==0:
+            k=i/s*100
+            print("{0} %".format(k))
+        if N==-1:
+            if(np.random.randint(11)>3):
+                W[i]=randomWignerMatrix(np.random.randint(2,7),xaxis)
+            else:
+                W[i]=randomSqueezedWigner(xs,ys)
+        else:
+            W[i]=randomWignerMatrix(N,xaxis)
+        W[i]=sk.transform.rotate(W[i],np.random.randint(0,360),resize=False);
+        W[i]=shift(W[i],shift=(np.random.randint(0,nxs/4),np.random.randint(0,nxs/4)))
+        P[i]=generatePofw(W[i],xaxis,nphi)
+    return((P,W))
+#%%
 #%%
 '''
 fig=plt.figure()
@@ -136,7 +179,7 @@ w=wnm(0,0,lxs)+wnm(1,0,lxs)+wnm(0,1,lxs)+wnm(1,1,lxs)
 w=np.real(w)
 #w=wnm(1,1,lxs)
 ax.plot_surface(xs,ys,np.real(w), rstride=1, cstride=1, cmap='viridis', edgecolor='none')
-#%%
+**#%%
 probdx=probdist(np.real(w),0)
 xaxis2, probdx2=equispacedPoints(probdx,lxs,20)
 plt.plot(lxs, probdx) 

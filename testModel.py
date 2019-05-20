@@ -26,9 +26,9 @@ from keras.models import model_from_json
 
 N=-1 #dimension of rho
 s=50000 #number of samples
-nphi=20#45 #number of angleSteps
+nphi=12#45 #number of angleSteps
 
-nxs=40
+nxs=20
 xmax=5
 lxs=np.linspace(-xmax, xmax, nxs)
 [xs, ys]=np.meshgrid(lxs,lxs);
@@ -58,25 +58,23 @@ wai_orig=ai.predict(p_test)
 wai=np.concatenate(wai_orig)
 wai=np.reshape(wai, (nxs,nxs))
 
-fig, axs = plt.subplots(3, sharex=True)
-axs[0].contourf(px,py,p,levels=35)
-axs[0].set_xlabel('r')
-axs[0].set_ylabel('phi')
-axs[0].axis('equal')
+fig, axs = plt.subplots(3,3, sharex=True)
+axs[0,0].contourf(px,py,p,levels=35)
+axs[0,0].set_xlabel('r')
+axs[0,0].set_ylabel('phi')
+axs[0,0].axis('equal')
    
-axs[1].contourf(xs,ys,w,levels=35)
-axs[1].set_xlabel('X')
-axs[1].set_ylabel('Y')
-axs[1].axis('equal')
+axs[1,0].contourf(xs,ys,w,levels=35)
+axs[1,0].set_xlabel('X')
+axs[1,0].set_ylabel('Y')
+axs[1,0].axis('equal')
 
-axs[2].contourf(xs,ys,wai,levels=35)
-axs[2].set_xlabel('X')
-axs[2].set_ylabel('Y')
-axs[2].axis('equal')
+axs[2,0].contourf(xs,ys,wai,levels=35)
+axs[2,0].set_xlabel('X')
+axs[2,0].set_ylabel('Y')
+axs[2,0].axis('equal')
 
-plt.show()
 
-#%%
 #squeezed light
 vx=0.2
 vy=1/vx
@@ -90,20 +88,16 @@ wai_orig=ai.predict(p_test)
 wai=np.concatenate(wai_orig)
 wai=np.reshape(wai, (nxs,nxs))
 
-fig2, axs2 = plt.subplots(3)
-axs2[0].contourf(px,py,p,levels=35)
-axs2[0].set_xlabel('r')
-axs2[0].set_ylabel('phi')
-axs[0].axis('equal')
+axs[0,1].contourf(px,py,p,levels=35)
+axs[0,1].set_xlabel('r')
+axs[0,1].set_ylabel('phi')
    
-axs2[1].contourf(xs,ys,w,levels=35)
-axs2[1].set_xlabel('X')
-axs2[1].set_ylabel('Y')
-axs[1].axis('equal')
+axs[1,1].contourf(xs,ys,w,levels=35)
+axs[1,1].set_xlabel('X')
+axs[1,1].set_ylabel('Y')
 
-axs2[2].contourf(xs,ys,wai,levels=35)
-axs2[2].set_xlabel('X')
-axs2[2].set_ylabel('Y')
-axs[2].axis('equal')
+axs[2,1].contourf(xs,ys,wai,levels=35)
+axs[2,1].set_xlabel('X')
+axs[2,1].set_ylabel('Y')
 
 plt.show()
