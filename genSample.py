@@ -68,8 +68,8 @@ def randomWignerMatrix(N, xaxis):
     return(w)
 
 def randomSqueezedWigner(xs,ys):
-    vx=np.random.random()
-    vy=1/vx
+    vx=np.random.random()+1.e-6
+    vy=1./vx
     return(np.exp(-xs**2/2./vx-ys**2/2./vy))    
     
 def probdist(w,phi):#w-wigner-function-matrix, phi-rotationangle
@@ -140,7 +140,7 @@ def generateDatasetWithShift(N,s,nphi,xaxis): #N-Dimension of rho, s-Number of s
         else:
             W[i]=randomWignerMatrix(N,xaxis)
         W[i]=sk.transform.rotate(W[i],np.random.randint(0,360),resize=False);
-        W[i]=shift(W[i],shift=(np.random.randint(0,nxs/4),np.random.randint(0,nxs/4)))
+        W[i]=shift(W[i],shift=(np.random.randint(0,nxs/6),np.random.randint(0,nxs/6)))
         P[i]=generatePofw(W[i],xaxis,nphi)
     return((P,W))
 def generateDatasetWithShiftAndSqueezed(N,s,nphi,xaxis):
@@ -160,7 +160,7 @@ def generateDatasetWithShiftAndSqueezed(N,s,nphi,xaxis):
         else:
             W[i]=randomWignerMatrix(N,xaxis)
         W[i]=sk.transform.rotate(W[i],np.random.randint(0,360),resize=False);
-        W[i]=shift(W[i],shift=(np.random.randint(0,nxs/4),np.random.randint(0,nxs/4)))
+        W[i]=shift(W[i],shift=(np.random.randint(0,nxs/6),np.random.randint(0,nxs/6)))
         P[i]=generatePofw(W[i],xaxis,nphi)
     return((P,W))
 #%%

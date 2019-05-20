@@ -27,7 +27,7 @@ from model import *
 #%%
 
 N=-1 #dimension of rho
-s=200000 #number of samples
+s=100000 #number of samples
 nphi=12#45 #number of angleSteps
 
 nxs=20
@@ -40,14 +40,14 @@ phispace=np.linspace(0,180,nphi)
 
 '''
 P, W=generateDatasetWithShiftAndSqueezed(N,s,nphi,lxs)
-np.save('data/P200000_12_20_shift_squeeze', P)
-np.save('data/W200000_12_20_shift_squeeze', W)
+np.save('data/P100000_12_20_shift_squeeze', P)
+np.save('data/W100000_12_20_shift_squeeze', W)
 '''
 #%%
-'''
-P=np.load('data/P50000_20_40.npy')
-W=np.load('data/W50000_20_40.npy')
-'''
+
+P=np.load('data/P100000_12_20_shift_squeeze.npy')
+W=np.load('data/W100000_12_20_shift_squeeze.npy')
+
 #%%
 fig=plt.figure(1)
 ax=fig.add_subplot(111)
@@ -88,13 +88,13 @@ history=ai.model.fit(P, W, epochs=3, batch_size=256, verbose=1, validation_data=
 #%%
 
 ai=simpleDeepNN(nxs,nphi)
-ai.model.compile(optimizer=keras.optimizers.Adam(0.0005),#tf.train.GradientDescentOptimizer(0.005),#optimizer=tf.train.AdamOptimizer(0.001),
+ai.model.compile(optimizer=keras.optimizers.RMSprop(0.001),#tf.train.GradientDescentOptimizer(0.005),#optimizer=tf.train.AdamOptimizer(0.001),
     loss='mean_squared_error')
 
 checkpoint = ModelCheckpoint('models/ai_checkpoint.h5', monitor='val_loss', verbose=1, save_best_only=True, mode='min')
 callbacks_list = [checkpoint]
 
-history=ai.model.fit(inputV, outputV, epochs=15, batch_size=32, verbose=1, validation_split=0.1, callbacks=callbacks_list)
+history=ai.model.fit(inputV, outputV, epochs=30, batch_size=32, verbose=1, validation_split=0.1, callbacks=callbacks_list)
 #%%
 ai.model.load_weights('models/ai_checkpoint.h5')
 #%%

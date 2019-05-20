@@ -58,18 +58,20 @@ wai_orig=ai.predict(p_test)
 wai=np.concatenate(wai_orig)
 wai=np.reshape(wai, (nxs,nxs))
 
+contour=np.linspace(-0.5,1,50)
+
 fig, axs = plt.subplots(3,3, sharex=True)
-axs[0,0].contourf(px,py,p,levels=35)
+axs[0,0].contourf(px,py,p,contour)
 axs[0,0].set_xlabel('r')
 axs[0,0].set_ylabel('phi')
 axs[0,0].axis('equal')
    
-axs[1,0].contourf(xs,ys,w,levels=35)
+axs[1,0].contourf(xs,ys,w,contour)
 axs[1,0].set_xlabel('X')
 axs[1,0].set_ylabel('Y')
 axs[1,0].axis('equal')
 
-axs[2,0].contourf(xs,ys,wai,levels=35)
+axs[2,0].contourf(xs,ys,wai,contour)
 axs[2,0].set_xlabel('X')
 axs[2,0].set_ylabel('Y')
 axs[2,0].axis('equal')
@@ -88,15 +90,15 @@ wai_orig=ai.predict(p_test)
 wai=np.concatenate(wai_orig)
 wai=np.reshape(wai, (nxs,nxs))
 
-axs[0,1].contourf(px,py,p,levels=35)
+axs[0,1].contourf(px,py,p,contour)
 axs[0,1].set_xlabel('r')
 axs[0,1].set_ylabel('phi')
    
-axs[1,1].contourf(xs,ys,w,levels=35)
+axs[1,1].contourf(xs,ys,w,contour)
 axs[1,1].set_xlabel('X')
 axs[1,1].set_ylabel('Y')
 
-axs[2,1].contourf(xs,ys,wai,levels=35)
+axs[2,1].contourf(xs,ys,wai,contour)
 axs[2,1].set_xlabel('X')
 axs[2,1].set_ylabel('Y')
 

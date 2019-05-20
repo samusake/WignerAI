@@ -12,11 +12,11 @@ class simpleDeepNN:
     def __init__(self, nxs, nphi):
         self.model=tf.keras.Sequential()
         
-        self.model.add(layers.Dense(nphi*nxs, activation='linear'))
+        self.model.add(layers.Dense(nphi*nxs, activation='relu'))
         # Add another:
-        self.model.add(layers.Dense(256, activation='linear'))
-        self.model.add(layers.Dense(256, activation='linear'))
-        self.model.add(layers.Dense(256, activation='linear'))
+        self.model.add(layers.Dense(256, activation='relu'))
+        self.model.add(layers.Dense(256, activation='relu'))
+        self.model.add(layers.Dense(256, activation='relu'))
         # Add a softmax layer with 10 output units:
         self.model.add(layers.Dense(nxs*nxs, activation='linear'))
     def train(self, eps, inputV, outputV, verb=0):
@@ -48,11 +48,30 @@ class simpleDeepNN2:
     def __init__(self, nxs, nphi):
         self.model=tf.keras.Sequential()
         
-        self.model.add(layers.Dense(nphi*nxs, activation='linear'))
+        self.model.add(layers.Dense(nphi*nxs, activation='relu'))
         # Add another:
-        self.model.add(layers.Dense(512, activation='linear'))
-        self.model.add(layers.Dense(512, activation='linear'))
-        self.model.add(layers.Dense(512, activation='linear'))
+        self.model.add(layers.Dense(512, activation='relu'))
+        self.model.add(layers.Dense(512, activation='relu'))
+        self.model.add(layers.Dense(512, activation='relu'))
+        # Add a softmax layer with 10 output units:
+        self.model.add(layers.Dense(nxs*nxs, activation='linear'))
+    def train(self, eps, inputV, outputV, verb=0):
+        self.model.compile(optimizer=tf.train.AdamOptimizer(0.001),
+              loss='mean_squared_error',
+              metrics=['accuracy', 'mean_squared_error'])
+        
+    def evaluate(self, testIn, testOut):
+        return(self.model.evaluate(testIn, testOut))
+    def predict(self, testIn):
+        return(self.model.predict(testIn))
+#%%
+class simpleDeepNN3:
+    def __init__(self, nxs, nphi):
+        self.model=tf.keras.Sequential()
+        
+        self.model.add(layers.Dense(nphi*nxs, activation='relu'))
+        # Add another:
+        self.model.add(layers.Dense(256, activation='relu'))
         # Add a softmax layer with 10 output units:
         self.model.add(layers.Dense(nxs*nxs, activation='linear'))
     def train(self, eps, inputV, outputV, verb=0):
