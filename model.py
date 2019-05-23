@@ -69,10 +69,10 @@ class smallDeepNN:
     def __init__(self, nxs, nphi):
         self.model=tf.keras.Sequential()
         
-        self.model.add(layers.Dense(nphi*nxs, activation='LeakyReLU'))
+        self.model.add(layers.Dense(nphi*nxs, activation='relu'))
         # Add another:
-        self.model.add(layers.Dense(32, activation='LeakyReLU'))
-        self.model.add(layers.Dense(32, activation='LeakyReLU'))
+        self.model.add(layers.Dense(128, activation='relu'))
+        self.model.add(layers.Dense(128, activation='relu'))
         # Add a softmax layer with 10 output units:
         self.model.add(layers.Dense(nxs*nxs, activation='linear'))
     def train(self, eps, inputV, outputV, verb=0):

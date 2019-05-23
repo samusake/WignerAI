@@ -36,17 +36,17 @@ lxs=np.linspace(-xmax, xmax, nxs)
 phispace=np.linspace(0,180,nphi, endpoint=False)
 [px, py]=np.meshgrid(lxs,phispace)
 
-#shift has a problem
-P, W=generateDatasetWithShift(N,s,phispace,lxs)
 
-np.save('data/P20000_20_20_shift', P)
-np.save('data/W20000_20_20_shift', W)
-
+'''
+P, W=generateDatasetWithShiftAndSqueezed(N,s,phispace,lxs)
+np.save('data/P20000_20_20_shift_squeezed', P)
+np.save('data/W20000_20_20_shift_squeezed', W)
+'''
 #%%
-'''
-P=np.load('data/P20000_20_20_shift_squeeze.npy')
-W=np.load('data/W20000_20_20_shift_squeeze.npy')
-'''
+
+P=np.load('data/P20000_20_20_shift_squeezed.npy')
+W=np.load('data/W20000_20_20_shift_squeezed.npy')
+
 #%%
 fig=plt.figure(1)
 ax=fig.add_subplot(111)
@@ -86,7 +86,7 @@ history=ai.model.fit(P, W, epochs=3, batch_size=256, verbose=1, validation_data=
 '''
 #%%
 
-ai=simpleDeepNN(nxs,nphi)
+ai=smallDeepNN(nxs,nphi)
 ai.model.compile(optimizer=keras.optimizers.RMSprop(0.001),#tf.train.GradientDescentOptimizer(0.005),#optimizer=tf.train.AdamOptimizer(0.001),
     loss='mean_squared_error')
 
