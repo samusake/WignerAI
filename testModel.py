@@ -33,7 +33,7 @@ xmax=5
 lxs=np.linspace(-xmax, xmax, nxs)
 [xs, ys]=np.meshgrid(lxs,lxs);
 
-phispace=np.linspace(0,180,nphi)
+phispace=np.linspace(0,180,nphi, endpoint=False)
 [px, py]=np.meshgrid(lxs,phispace)
 
 #%%

@@ -25,44 +25,45 @@ from model import *
 #%%
 
 N=-1 #dimension of rho
-s=100000 #number of samples
-nphi=12#45 #number of angleSteps
+s=20000 #number of samples
+nphi=20#45 #number of angleSteps
 
 nxs=20
 xmax=5
 lxs=np.linspace(-xmax, xmax, nxs)
 [xs, ys]=np.meshgrid(lxs,lxs);
 
-phispace=np.linspace(0,180,nphi)
+phispace=np.linspace(0,180,nphi, endpoint=False)
 [px, py]=np.meshgrid(lxs,phispace)
 
-'''
-P, W=generateDatasetWithShiftAndSqueezed(N,s,phispace,lxs)
-np.save('data/P100000_12_20_shift_squeeze', P)
-np.save('data/W100000_12_20_shift_squeeze', W)
-'''
+#shift has a problem
+P, W=generateDatasetWithShift(N,s,phispace,lxs)
+
+np.save('data/P20000_20_20_shift', P)
+np.save('data/W20000_20_20_shift', W)
+
 #%%
-
-P=np.load('data/P100000_12_20_shift_squeeze.npy')
-W=np.load('data/W100000_12_20_shift_squeeze.npy')
-
+'''
+P=np.load('data/P20000_20_20_shift_squeeze.npy')
+W=np.load('data/W20000_20_20_shift_squeeze.npy')
+'''
 #%%
 fig=plt.figure(1)
 ax=fig.add_subplot(111)
 
-ax.contourf(px,py,P[3],levels=15)
+ax.contourf(px,py,P[2],levels=15)
 ax.set_xlabel('u')
 ax.set_ylabel('phi')
 
 fig=plt.figure(2)
 ax=fig.add_subplot(111)
-ax.contourf(xs,ys,np.real(W[3]),levels=15)
+ax.contourf(xs,ys,np.real(W[2]),levels=15)
 ax.set_xlabel('X')
 ax.set_ylabel('Y')
 
 #%%
 stest=30
-Ptest, Wtest=generateDatasetWithShiftAndSqueezed(-1,stest,nphi,lxs)
+Ptest, Wtest=generateDatasetWithShiftAndSqueezed(-1,stest,phispace,lxs)
 
 inputV=np.zeros((s,nxs*nphi))
 outputV=np.zeros((s,nxs*nxs))
@@ -140,9 +141,6 @@ plt.show()
 
 
 #%%
-
-
-
 
 
 

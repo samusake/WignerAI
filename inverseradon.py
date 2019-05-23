@@ -34,11 +34,11 @@ xmax=5
 lxs=np.linspace(-xmax, xmax, nxs)
 [xs, ys]=np.meshgrid(lxs,lxs);
 
-phispace=np.linspace(0,180,nphi)
+phispace=np.linspace(0,180,nphi, endpoint=False)
 [px, py]=np.meshgrid(lxs,phispace)
 #%%
-P=np.load('data/P50000_20_40.npy')
-W=np.load('data/W50000_20_40.npy')
+P=np.load('data/P100000_12_12.npy')
+W=np.load('data/W100000_12_12.npy')
 #%%
 i=3
 p=generatePofw(W[i],lxs, phispace)
