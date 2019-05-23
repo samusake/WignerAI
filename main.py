@@ -11,9 +11,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import skimage as sk
 
-from numba import jit
 import time
-import pickle
 
 import tensorflow as tf
 from tensorflow.keras import layers
@@ -39,7 +37,7 @@ phispace=np.linspace(0,180,nphi)
 [px, py]=np.meshgrid(lxs,phispace)
 
 '''
-P, W=generateDatasetWithShiftAndSqueezed(N,s,nphi,lxs)
+P, W=generateDatasetWithShiftAndSqueezed(N,s,phispace,lxs)
 np.save('data/P100000_12_20_shift_squeeze', P)
 np.save('data/W100000_12_20_shift_squeeze', W)
 '''

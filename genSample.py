@@ -73,8 +73,8 @@ def randomSqueezedWigner(xs,ys):
     return(np.exp(-xs**2/2./vx-ys**2/2./vy))    
     
 def probdist(w,phi):#w-wigner-function-matrix, phi-rotationangle
-    w2=sk.transform.rotate(w,phi,resize=False);
-    probdist=np.sum(w2,1);
+    w2=sk.transform.rotate(w,-phi,resize=False);
+    probdist=np.sum(w2,0);
     probdist=probdist/np.sum(probdist)
     return(probdist)
 
@@ -101,18 +101,19 @@ def prepareExpData(expdata, nDatapoints):
     #use kerneldensity estimation to get probabillity distribution to get X equispaced Datapoints
     return(0)
 
-def generatePofw(w, xaxis, nphi):
+def generatePofw(w, xaxis, phispace):
     nxs=len(xaxis)
-    hphi=int(180/nphi)
+    nphi=len(phispace)
     P=np.zeros((nphi,nxs))
     k=0
-    for i in range(0, 181-hphi, hphi):
+    for i in phispace:
         P[k]=probdist(w,i)
         k=k+1
     return(P)
 
-def generateDataset(N,s,nphi,xaxis): #N-Dimension of rho, s-Number of samples, nphi-angular stepsize
-    nxs=len(xaxis)    
+def generateDataset(N,s,phispace,xaxis): #N-Dimension of rho, s-Number of samples, nphi-angular stepsize
+    nxs=len(xaxis)   
+    nphi=len(phispace)
     W=np.zeros((s,nxs,nxs))
     P=np.zeros((s,nphi,nxs))
     for i in range(0, s):
@@ -124,11 +125,12 @@ def generateDataset(N,s,nphi,xaxis): #N-Dimension of rho, s-Number of samples, n
         else:
             W[i]=randomWignerMatrix(N,xaxis)
         W[i]=sk.transform.rotate(W[i],np.random.randint(0,360),resize=False);
-        P[i]=generatePofw(W[i],xaxis,nphi)
+        P[i]=generatePofw(W[i],xaxis,phispace)
     return((P,W))
 
-def generateDatasetWithShift(N,s,nphi,xaxis): #N-Dimension of rho, s-Number of samples, nphi-angular stepsize
-    nxs=len(xaxis)    
+def generateDatasetWithShift(N,s,phispace,xaxis): #N-Dimension of rho, s-Number of samples, nphi-angular stepsize
+    nxs=len(xaxis)
+    nphi=len(phispace)
     W=np.zeros((s,nxs,nxs))
     P=np.zeros((s,nphi,nxs))
     for i in range(0, s):
@@ -141,10 +143,11 @@ def generateDatasetWithShift(N,s,nphi,xaxis): #N-Dimension of rho, s-Number of s
             W[i]=randomWignerMatrix(N,xaxis)
         W[i]=sk.transform.rotate(W[i],np.random.randint(0,360),resize=False);
         W[i]=shift(W[i],shift=(np.random.randint(0,nxs/6),np.random.randint(0,nxs/6)))
-        P[i]=generatePofw(W[i],xaxis,nphi)
+        P[i]=generatePofw(W[i],xaxis,phispace)
     return((P,W))
-def generateDatasetWithShiftAndSqueezed(N,s,nphi,xaxis):
+def generateDatasetWithShiftAndSqueezed(N,s,phispace,xaxis):
     nxs=len(xaxis)    
+    nphi=len(phispace)
     W=np.zeros((s,nxs,nxs))
     P=np.zeros((s,nphi,nxs))
     [xs, ys]=np.meshgrid(xaxis,xaxis);
@@ -161,7 +164,7 @@ def generateDatasetWithShiftAndSqueezed(N,s,nphi,xaxis):
             W[i]=randomWignerMatrix(N,xaxis)
         W[i]=sk.transform.rotate(W[i],np.random.randint(0,360),resize=False);
         W[i]=shift(W[i],shift=(np.random.randint(0,nxs/6),np.random.randint(0,nxs/6)))
-        P[i]=generatePofw(W[i],xaxis,nphi)
+        P[i]=generatePofw(W[i],xaxis,phispace)
     return((P,W))
 #%%
 #%%

@@ -38,18 +38,18 @@ phispace=np.linspace(0,180,nphi)
 
 #%%
 
-json_file = open('models/ai_model.json', 'r')
+json_file = open('models/ai_100000_12_20.json', 'r')
 loaded_model_json = json_file.read()
 json_file.close()
 ai = keras.models.model_from_json(loaded_model_json)
 # load weights into new model
-ai.load_weights("models/ai_checkpoint.h5")
+ai.load_weights("models/ai_100000_12_20.h5")
 print("Loaded model from disk")
 
 #%%
 #Gauss
 w=np.exp(-xs**2/2.-ys**2/2.)
-p=generatePofw(w,lxs,nphi)
+p=generatePofw(w,lxs,phispace)
 
 p_test=p.flatten()
 p_test=np.array([p_test])
