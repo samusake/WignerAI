@@ -40,6 +40,10 @@ phispace=np.linspace(0,180,nphi, endpoint=False)
 stest=1000
 P, W=generateDatasetWithShiftAndSqueezed(-1,stest,phispace,lxs)
 #%%
+P_radon=np.zeros((stest,nphi,nxs))
+for i in range(0,stest):
+    P_radon[i]=generateP_radonofw(W[i],lxs,phispace)
+#%%
 json_file = open('models/60/ai_model.json', 'r')
 loaded_model_json = json_file.read()
 json_file.close()
@@ -52,10 +56,10 @@ print("Loaded model from disk")
 reconstruction_fbp=np.zeros((stest, nxs,nphi))
 start=time.time()
 for i in range(0,stest):
-    reconstruction_fbp[i] = iradon(np.transpose(P[i]), theta=phispace)
+    reconstruction_fbp[i] = iradon(P_radon[i], theta=phispace)
 end=time.time()
-error = reconstruction_fbp/np.sum(reconstruction_fbp) - W[0]/np.sum(W[0])
-print('FBP reconstruction error (reconstruction and W normalized): %.3g' % np.sqrt(np.mean(error**2)))
+error = reconstruction_fbp - W
+print('FBP reconstruction error (1000 samples): %.3g' % np.sqrt(np.mean(error**2)))
 print('FBP calculation duration (1000 samples): %.3g' % (end-start))
 #sinogram=radon(W[i], theta=phispace, circle=True)
 
@@ -71,10 +75,10 @@ end=time.time()
 wai=np.concatenate(wai_orig)
 wai=np.reshape(wai, (stest,nxs,nxs))
 
-error = wai[0]/np.sum(wai[0])- W[0]/np.sum(W[0])
+error = wai - W
 
 
-print('AI reconstruction error (reconstruction and W normalized): %.3g' % np.sqrt(np.mean(error**2)))
+print('AI reconstruction error (1000 samples): %.3g' % np.sqrt(np.mean(error**2)))
 print('AI prediction duration (1000 samples): %.3g' % (end-start))
 
 contour=np.linspace(-0.3,0.4,50)
@@ -95,7 +99,7 @@ for i in range(0,4):
     axs[2,i].set_ylabel('Y')
     axs[2,i].axis('equal')
     
-    axs[3,i].contourf(xs,ys, reconstruction_fbp[i]*P[i].sum(),contour)
+    axs[3,i].contourf(xs,ys, reconstruction_fbp[i],contour)
     axs[3,i].set_xlabel('X')
     axs[3,i].set_ylabel('Y')
     axs[3,i].axis('equal')

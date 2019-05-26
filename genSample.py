@@ -111,6 +111,17 @@ def generatePofw(w, xaxis, phispace):
         k=k+1
     return(P)
 
+def generateP_radonofw(w,xaxis,phispace):
+    nxs=len(xaxis)
+    nphi=len(phispace)
+    P=np.zeros((nphi,nxs))
+    k=0
+    for i in phispace:
+        w2=sk.transform.rotate(w,-i,resize=False);
+        P[k]=np.sum(w2,0)
+        k=k+1
+    return(np.transpose(P))    
+
 def generateDataset(N,s,phispace,xaxis): #N-Dimension of rho, s-Number of samples, nphi-angular stepsize
     nxs=len(xaxis)   
     nphi=len(phispace)
