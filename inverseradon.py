@@ -27,9 +27,9 @@ from skimage.transform import radon, rescale
 #%%
 N=-1 #dimension of rho
 s=100000 #number of samples
-nphi=20#45 #number of angleSteps
+nphi=60#45 #number of angleSteps
 
-nxs=40
+nxs=60
 xmax=5
 lxs=np.linspace(-xmax, xmax, nxs)
 [xs, ys]=np.meshgrid(lxs,lxs);
@@ -37,37 +37,67 @@ lxs=np.linspace(-xmax, xmax, nxs)
 phispace=np.linspace(0,180,nphi, endpoint=False)
 [px, py]=np.meshgrid(lxs,phispace)
 #%%
-P=np.load('data/P100000_12_12.npy')
-W=np.load('data/W100000_12_12.npy')
+stest=1000
+P, W=generateDatasetWithShiftAndSqueezed(-1,stest,phispace,lxs)
 #%%
-i=3
-p=generatePofw(W[i],lxs, phispace)
-reconstruction_fbp = iradon(np.transpose(p), theta=phispace)
-#error = reconstruction_fbp - W[0]
-#print('FBP rms reconstruction error: %.3g' % np.sqrt(np.mean(error**2)))
+json_file = open('models/60/ai_model.json', 'r')
+loaded_model_json = json_file.read()
+json_file.close()
+ai = keras.models.model_from_json(loaded_model_json)
+# load weights into new model
+ai.load_weights("models/60/ai_checkpoint.h5")
+print("Loaded model from disk")
 
-sinogram=radon(W[i], theta=phispace, circle=True)
+#%%
+reconstruction_fbp=np.zeros((stest, nxs,nphi))
+start=time.time()
+for i in range(0,stest):
+    reconstruction_fbp[i] = iradon(np.transpose(P[i]), theta=phispace)
+end=time.time()
+error = reconstruction_fbp/np.sum(reconstruction_fbp) - W[0]/np.sum(W[0])
+print('FBP reconstruction error (reconstruction and W normalized): %.3g' % np.sqrt(np.mean(error**2)))
+print('FBP calculation duration (1000 samples): %.3g' % (end-start))
+#sinogram=radon(W[i], theta=phispace, circle=True)
 
+inputV=np.zeros((stest,nxs*nphi))
+for i in range(0, len(P)):
+    inputV[i]=P[i].flatten()
+
+
+#predict for all
+start=time.time()
+wai_orig=ai.predict(inputV)
+end=time.time()
+wai=np.concatenate(wai_orig)
+wai=np.reshape(wai, (stest,nxs,nxs))
+
+error = wai[0]/np.sum(wai[0])- W[0]/np.sum(W[0])
+
+
+print('AI reconstruction error (reconstruction and W normalized): %.3g' % np.sqrt(np.mean(error**2)))
+print('AI prediction duration (1000 samples): %.3g' % (end-start))
 
 contour=np.linspace(-0.3,0.4,50)
 fig, axs = plt.subplots(4,4, sharex=True)
-axs[0,0].contourf(px,py,p,levels=15)
-axs[0,0].set_xlabel('r')
-axs[0,0].set_ylabel('phi')
-axs[0,0].axis('equal')
-   
-axs[1,0].contourf(xs,ys,W[i],levels=15)
-axs[1,0].set_xlabel('X')
-axs[1,0].set_ylabel('Y')
-axs[1,0].axis('equal')
+for i in range(0,4):
+    axs[0,i].contourf(px,py,P[i],levels=15)
+    axs[0,i].set_xlabel('r')
+    axs[0,i].set_ylabel('phi')
+    axs[0,i].axis('equal')
+       
+    axs[1,i].contourf(xs,ys,W[i],contour)
+    axs[1,i].set_xlabel('X')
+    axs[1,i].set_ylabel('Y')
+    axs[1,i].axis('equal')
+    
+    axs[2,i].contourf(xs,ys, wai[i],contour)
+    axs[2,i].set_xlabel('X')
+    axs[2,i].set_ylabel('Y')
+    axs[2,i].axis('equal')
+    
+    axs[3,i].contourf(xs,ys, reconstruction_fbp[i]*P[i].sum(),contour)
+    axs[3,i].set_xlabel('X')
+    axs[3,i].set_ylabel('Y')
+    axs[3,i].axis('equal')
 
-axs[2,0].contourf(px,py, np.transpose(sinogram),levels=15)
-axs[2,0].set_xlabel('X')
-axs[2,0].set_ylabel('Y')
-axs[2,0].axis('equal')
-
-axs[3,0].contourf(xs,ys, reconstruction_fbp,levels=15)
-axs[3,0].set_xlabel('X')
-axs[3,0].set_ylabel('Y')
-axs[3,0].axis('equal')
-
+plt.show()
