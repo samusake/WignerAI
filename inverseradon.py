@@ -24,6 +24,7 @@ from model import *
 
 from skimage.transform import iradon, iradon_sart
 from skimage.transform import radon, rescale
+from scipy.special import erf
 #%%
 N=-1 #dimension of rho
 s=100000 #number of samples
@@ -37,7 +38,7 @@ lxs=np.linspace(-xmax, xmax, nxs)
 phispace=np.linspace(0,180,nphi, endpoint=False)
 [px, py]=np.meshgrid(lxs,phispace)
 #%%
-stest=1000
+stest=30
 P, W=generateDatasetWithShiftAndSqueezed(-1,stest,phispace,lxs)
 #%%
 P_radon=np.zeros((stest,nphi,nxs))
@@ -81,27 +82,33 @@ error = wai - W
 print('AI reconstruction error (1000 samples): %.3g' % np.sqrt(np.mean(error**2)))
 print('AI prediction duration (1000 samples): %.3g' % (end-start))
 
-contour=np.linspace(-0.3,0.4,50)
+#%%
+contour1=erf(np.linspace(-0.2,0.2,100)/np.sqrt(2))
+contour2=erf(np.linspace(-0.3,2,100)/np.sqrt(2*0.4))
 fig, axs = plt.subplots(4,4, sharex=True)
 for i in range(0,4):
-    axs[0,i].contourf(px,py,P[i],levels=15)
-    axs[0,i].set_xlabel('r')
-    axs[0,i].set_ylabel('phi')
-    axs[0,i].axis('equal')
-       
-    axs[1,i].contourf(xs,ys,W[i],contour)
-    axs[1,i].set_xlabel('X')
-    axs[1,i].set_ylabel('Y')
-    axs[1,i].axis('equal')
-    
-    axs[2,i].contourf(xs,ys, wai[i],contour)
-    axs[2,i].set_xlabel('X')
-    axs[2,i].set_ylabel('Y')
-    axs[2,i].axis('equal')
-    
-    axs[3,i].contourf(xs,ys, reconstruction_fbp[i],contour)
-    axs[3,i].set_xlabel('X')
-    axs[3,i].set_ylabel('Y')
+    axs[0,i].contourf(px,py,P[i],contour1)
+    axs[1,i].contourf(xs,ys,W[i],contour2)
+    axs[1,i].axis('equal')  
+    axs[2,i].contourf(xs,ys, wai[i],contour2)
+    axs[2,i].axis('equal')    
+    axs[3,i].contourf(xs,ys, reconstruction_fbp[i],contour2)
     axs[3,i].axis('equal')
+
+
+axs[0,0].set_ylabel('phi')
+axs[1,0].set_ylabel('Y')
+axs[2,0].set_ylabel('Y')
+axs[3,0].set_ylabel('Y')
+
+axs[3,0].set_xlabel('X')
+axs[3,1].set_xlabel('X')
+axs[3,2].set_xlabel('X')
+axs[3,3].set_xlabel('X')
+
+axs[0,1].title.set_text('Sinogram')
+axs[1,1].title.set_text('Theoretical wigner distribution')
+axs[2,1].title.set_text('AI prediction')
+axs[3,1].title.set_text('FBP (skimage implementation)')
 
 plt.show()
