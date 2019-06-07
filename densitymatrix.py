@@ -55,7 +55,7 @@ def generateDatasetDensityMatrix(N,s,phispace,xaxis): #N-Dimension of rho, s-Num
     return((P,W,rho))
 #%%
 N=2 #dimension of rho
-s=100000 #number of samples
+s=10000 #number of samples
 nphi=20#45 #number of angleSteps
 
 nxs=20
@@ -69,9 +69,10 @@ phispace=np.linspace(0,180,nphi, endpoint=False)
 
 '''
 Pr,Wr,rho=generateDatasetDensityMatrix(N,s,phispace,lxs)
-np.save('data/100000_20_20_density_N2/P', Pr)
-np.save('data/100000_20_20_density_N2/W', Wr)
-np.save('data/100000_20_20_density_N2/rho', rho)
+
+np.save('data/100000_20_20_density_N7/P', Pr)
+np.save('data/100000_20_20_density_N7/W', Wr)
+np.save('data/100000_20_20_density_N7/rho', rho)
 '''
 #%%
 
@@ -89,7 +90,7 @@ ax.set_ylabel('phi')
 
 fig=plt.figure(2)
 ax=fig.add_subplot(111)
-ax.contourf(xs,ys,np.real(W[2]),levels=15)
+ax.contourf(xs,ys,np.real(W[3]),levels=15)
 ax.set_xlabel('X')
 ax.set_ylabel('Y')
 
@@ -99,7 +100,7 @@ Ptest, Wtest, rhotest=generateDatasetDensityMatrix(N,stest,phispace,lxs)
 
 #split real and complex
 rhotestsplit=np.stack((rhotest.real, rhotest.imag), -1)
-#rhoback=rhosplit[:,:,:,0]+1j*rhosplit[:,:,:,1]
+rhoback=rhosplit[:,:,:,0]+1j*rhosplit[:,:,:,1]
 #%%
 rhosplit=np.stack((rho.real, rho.imag), -1)
 

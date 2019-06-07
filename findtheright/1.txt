@@ -1,0 +1,6 @@
+#Param1= 35928
+#Param2= 52440
+#Param3= 68952
+#Param4= 85464
+with SGD
+all trained with 9000 samples per epoch, 10x10 resolution

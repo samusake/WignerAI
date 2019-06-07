@@ -1,0 +1,5 @@
+#Param1= 127576
+#Param2= 68952
+#Param3= 101848
+#Param4= 98264
+with SGD

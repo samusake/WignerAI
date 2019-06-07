@@ -25,10 +25,10 @@ from model import *
 #%%
 
 N=-1 #dimension of rho
-s=20000 #number of samples
-nphi=20#45 #number of angleSteps
+s=10000 #number of samples
+nphi=10#45 #number of angleSteps
 
-nxs=20
+nxs=10
 xmax=5
 lxs=np.linspace(-xmax, xmax, nxs)
 [xs, ys]=np.meshgrid(lxs,lxs);
@@ -39,13 +39,13 @@ phispace=np.linspace(0,180,nphi, endpoint=False)
 
 '''
 P, W=generateDatasetWithShiftAndSqueezed(N,s,phispace,lxs)
-np.save('data/P20000_20_20_shift_squeezed', P)
-np.save('data/W20000_20_20_shift_squeezed', W)
+np.save('data/P10000_10_10_shift_squeezed', P)
+np.save('data/W10000_10_10_shift_squeezed', W)
 '''
 #%%
 
-P=np.load('data/P20000_20_20_shift_squeezed.npy')
-W=np.load('data/W20000_20_20_shift_squeezed.npy')
+P=np.load('data/P10000_10_10_shift_squeezed.npy')
+W=np.load('data/W10000_10_10_shift_squeezed.npy')
 
 #%%
 fig=plt.figure(1)
@@ -78,22 +78,29 @@ for i in range(0,len(Ptest)):
     testOut[i]=Wtest[i].flatten()
 #%%
 '''
+P_input=P.reshape(s,nphi,nxs,1)
 ai=simpleConv(nxs,nphi)
-#%%
-ai.model.compile(optimizer=tf.train.AdamOptimizer(0.001),#tf.train.GradientDescentOptimizer(0.005),#optimizer=tf.train.AdamOptimizer(0.001),
-    loss='mean_squared_error')
-history=ai.model.fit(P, W, epochs=3, batch_size=256, verbose=1, validation_data=(Ptest, Wtest))
-'''
-#%%
-
-ai=smallDeepNN(nxs,nphi)
 ai.model.compile(optimizer=keras.optimizers.RMSprop(0.001),#tf.train.GradientDescentOptimizer(0.005),#optimizer=tf.train.AdamOptimizer(0.001),
     loss='mean_squared_error')
 
 checkpoint = ModelCheckpoint('models/ai_checkpoint.h5', monitor='val_loss', verbose=1, save_best_only=True, mode='min')
 callbacks_list = [checkpoint]
 
-history=ai.model.fit(inputV, outputV, epochs=30, batch_size=32, verbose=1, validation_split=0.1, callbacks=callbacks_list)
+history=ai.model.fit(P_input, outputV, epochs=1, batch_size=32, verbose=1, validation_split=0.1, callbacks=callbacks_list)
+ai.model.count_params()
+'''
+#%%
+
+ai=smallDeepNN(nxs,nphi)
+
+ai.model.compile(optimizer=keras.optimizers.RMSprop(0.001),#tf.train.GradientDescentOptimizer(0.005),#optimizer=tf.train.AdamOptimizer(0.001),
+    loss='mean_squared_error')
+
+checkpoint = ModelCheckpoint('models/ai_checkpoint.h5', monitor='val_loss', verbose=1, save_best_only=True, mode='min')
+callbacks_list = [checkpoint]
+
+history=ai.model.fit(inputV, outputV, epochs=1, batch_size=32, verbose=1, validation_split=0.1, callbacks=callbacks_list)
+ai.model.count_params()
 #%%
 ai.model.load_weights('models/ai_checkpoint.h5')
 #%%

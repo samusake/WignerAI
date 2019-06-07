@@ -38,7 +38,7 @@ lxs=np.linspace(-xmax, xmax, nxs)
 phispace=np.linspace(0,180,nphi, endpoint=False)
 [px, py]=np.meshgrid(lxs,phispace)
 #%%
-stest=30
+stest=10
 P, W=generateDatasetWithShiftAndSqueezed(-1,stest,phispace,lxs)
 #%%
 P_radon=np.zeros((stest,nphi,nxs))
@@ -62,6 +62,7 @@ end=time.time()
 error = reconstruction_fbp - W
 print('FBP reconstruction error (1000 samples): %.3g' % np.sqrt(np.mean(error**2)))
 print('FBP calculation duration (1000 samples): %.3g' % (end-start))
+print('FBP mean calculation duration: %.3g' % ((end-start)/stest))
 #sinogram=radon(W[i], theta=phispace, circle=True)
 
 inputV=np.zeros((stest,nxs*nphi))
@@ -82,17 +83,24 @@ error = wai - W
 print('AI reconstruction error (1000 samples): %.3g' % np.sqrt(np.mean(error**2)))
 print('AI prediction duration (1000 samples): %.3g' % (end-start))
 
+start=time.time()
+for i in range(0,stest):
+    wai_orig=ai.predict(np.array([inputV[i]]))
+end=time.time()
+print('AI mean prediction duration: %.3g' % ((end-start)/stest))
+
+
 #%%
-contour1=erf(np.linspace(-0.2,0.2,100)/np.sqrt(2))
-contour2=erf(np.linspace(-0.3,2,100)/np.sqrt(2*0.4))
+#contour1=erf(np.linspace(-0.7,0.7,100)/np.sqrt(2))
+#contour2=erf(np.linspace(-0.5,1,100)/np.sqrt(2*0.4))
 fig, axs = plt.subplots(4,4, sharex=True)
 for i in range(0,4):
-    axs[0,i].contourf(px,py,P[i],contour1)
-    axs[1,i].contourf(xs,ys,W[i],contour2)
+    axs[0,i].contourf(px,py,P[i]/np.mean(P[i]),levels=15,extend='both')
+    axs[1,i].contourf(xs,ys,W[i]/np.mean(W[i]),levels=15,extend='both')
     axs[1,i].axis('equal')  
-    axs[2,i].contourf(xs,ys, wai[i],contour2)
+    axs[2,i].contourf(xs,ys, wai[i]/np.mean(W[i]),levels=15,extend='both')
     axs[2,i].axis('equal')    
-    axs[3,i].contourf(xs,ys, reconstruction_fbp[i],contour2)
+    axs[3,i].contourf(xs,ys, reconstruction_fbp[i]/np.mean(W[i]),levels=15,extend='both')
     axs[3,i].axis('equal')
 
 
