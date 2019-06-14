@@ -12,6 +12,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import skimage as sk
 
 import time
+import json
 
 import tensorflow as tf
 from tensorflow.keras import layers
@@ -22,6 +23,7 @@ from tensorflow.keras.callbacks import ModelCheckpoint
 
 from genSample import *
 from model import *
+
 #%%
 
 N=-1 #dimension of rho
@@ -100,6 +102,10 @@ checkpoint = ModelCheckpoint('models/ai_checkpoint.h5', monitor='val_loss', verb
 callbacks_list = [checkpoint]
 
 history=ai.model.fit(inputV, outputV, epochs=1, batch_size=32, verbose=1, validation_split=0.1, callbacks=callbacks_list)
+for i in range(1,5):
+    temphist=ai.model.fit(inputV, outputV, epochs=1, batch_size=32, verbose=1, validation_split=0.1, callbacks=callbacks_list)
+    history.history['loss'].append(temphist.history['loss'][0])
+    history.history['val_loss'].append(temphist.history['val_loss'][0])
 ai.model.count_params()
 #%%
 ai.model.load_weights('models/ai_checkpoint.h5')
@@ -108,11 +114,13 @@ ai.model.load_weights('models/ai_checkpoint.h5')
 with open('models/ai_model.json', 'w') as json_file:
     json_file.write(ai.model.to_json())
 ai.model.save_weights('models/ai_weights.h5')
-
+with open('models/ai_history.json', 'w') as json_file:
+    json.dump(history.history, json_file)
 #save AI
 #%%
 plt.semilogy(history.history['loss'])
 plt.semilogy(history.history['val_loss'])
+
 plt.title('Model loss')
 plt.ylabel('Loss')
 plt.xlabel('Epoch')

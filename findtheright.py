@@ -20,6 +20,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import skimage as sk
 
 import time
+import json
 
 import tensorflow as tf
 from tensorflow.keras import layers
@@ -55,7 +56,7 @@ for i in range(0, len(P)):
 #%%
 ai=smallDeepNN1(nxs,nphi)
 
-ai.model.compile(optimizer=keras.optimizers.Adam(0.01),#tf.train.GradientDescentOptimizer(0.005),#optimizer=tf.train.AdamOptimizer(0.001),
+ai.model.compile(optimizer=keras.optimizers.Adam(0.001,decay=0.0001),#tf.train.GradientDescentOptimizer(0.005),#optimizer=tf.train.AdamOptimizer(0.001),
     loss='mean_squared_error')
 
 checkpoint = ModelCheckpoint('models/ai_checkpoint.h5', monitor='val_loss', verbose=1, save_best_only=True, mode='min')
@@ -66,7 +67,7 @@ c1=ai.model.count_params()
 #%%
 ai=smallDeepNN1(nxs,nphi)
 
-ai.model.compile(optimizer=keras.optimizers.Adam(0.001),#tf.train.GradientDescentOptimizer(0.005),#optimizer=tf.train.AdamOptimizer(0.001),
+ai.model.compile(optimizer=keras.optimizers.Adam(0.001,decay=0.001),#tf.train.GradientDescentOptimizer(0.005),#optimizer=tf.train.AdamOptimizer(0.001),
     loss='mean_squared_error')
 
 checkpoint = ModelCheckpoint('models/ai_checkpoint.h5', monitor='val_loss', verbose=1, save_best_only=True, mode='min')
@@ -77,7 +78,7 @@ c2=ai.model.count_params()
 #%%
 ai=smallDeepNN1(nxs,nphi)
 
-ai.model.compile(optimizer=keras.optimizers.Adam(0.0005),#tf.train.GradientDescentOptimizer(0.005),#optimizer=tf.train.AdamOptimizer(0.001),
+ai.model.compile(optimizer=keras.optimizers.Adam(0.001,decay=0.01),#tf.train.GradientDescentOptimizer(0.005),#optimizer=tf.train.AdamOptimizer(0.001),
     loss='mean_squared_error')
 
 checkpoint = ModelCheckpoint('models/ai_checkpoint.h5', monitor='val_loss', verbose=1, save_best_only=True, mode='min')
@@ -88,7 +89,7 @@ c3=ai.model.count_params()
 #%%
 ai=smallDeepNN1(nxs,nphi)
 
-ai.model.compile(optimizer=keras.optimizers.Adam(0.0001),#tf.train.GradientDescentOptimizer(0.005),#optimizer=tf.train.AdamOptimizer(0.001),
+ai.model.compile(optimizer=keras.optimizers.Adam(0.001),#tf.train.GradientDescentOptimizer(0.005),#optimizer=tf.train.AdamOptimizer(0.001),
     loss='mean_squared_error')
 
 checkpoint = ModelCheckpoint('models/ai_checkpoint.h5', monitor='val_loss', verbose=1, save_best_only=True, mode='min')
@@ -104,6 +105,8 @@ with open('models/ai_model.json', 'w') as json_file:
     json_file.write(ai.model.to_json())
 ai.model.save_weights('models/ai_weights.h5')
 
+with open('models/ai_history.json', 'w') as json_file:
+    json.dump(history4.history, json_file)
 #save AI
 #%%
 plt.semilogy(history1.history['val_loss'])
@@ -113,7 +116,7 @@ plt.semilogy(history4.history['val_loss'])
 plt.title('Model loss')
 plt.ylabel('Loss')
 plt.xlabel('Epoch')
-plt.legend(['Adam, lr=0,01', 'Adam, lr=0,001', 'Adam, lr=0,0005', 'Adam, lr=0,0001'], loc='right')
+plt.legend(['Adam, decay=0,0001', 'Adam, decay=0,001', 'Adam, decay=0,01', 'Adam, decay=0'], loc='upper right')
 plt.show()
 
 print("#Param1=", c1)

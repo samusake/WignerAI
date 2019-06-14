@@ -11,7 +11,6 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import skimage as sk
 
-from numba import jit
 import time
 #%%
 
@@ -185,15 +184,19 @@ ax=fig.add_subplot(111,projection='3d')
 
 
 nxs=51
+nphi=51
 xmax=5
 lxs=np.linspace(-xmax, xmax, nxs)
 [xs, ys]=np.meshgrid(lxs,lxs);
+
+phispace=np.linspace(0,180,nphi, endpoint=False)
+[px, py]=np.meshgrid(lxs,phispace)
 
 w=wnm(0,0,lxs)+wnm(1,0,lxs)+wnm(0,1,lxs)+wnm(1,1,lxs)
 w=np.real(w)
 #w=wnm(1,1,lxs)
 ax.plot_surface(xs,ys,np.real(w), rstride=1, cstride=1, cmap='viridis', edgecolor='none')
-**#%%
+#%%
 probdx=probdist(np.real(w),0)
 xaxis2, probdx2=equispacedPoints(probdx,lxs,20)
 plt.plot(lxs, probdx) 
@@ -207,14 +210,14 @@ plt.plot(lxs, cumdx)
 plt.show()
 
 #%%
-histsample=sample(cumdx,lxs,100000)
+histsample=sample(cumdx,lxs,100)
 plt.plot(lxs,histsample,lxs,probdx)
 plt.show()
 #%%
 
 w=wnm(0,0,lxs)+wnm(1,0,lxs)+wnm(0,1,lxs)+wnm(1,1,lxs)
 w=np.real(w)
-P=generatePofw(w, lxs, 4)
+P=generatePofw(w, lxs, phispace)
 plt.plot(lxs, P[0])
 plt.show()
 
@@ -228,13 +231,13 @@ ax.plot_surface(xs,ys,np.real(w), rstride=1, cstride=1, cmap='viridis', edgecolo
 
 
 #%%
-P=generatePofw(w, lxs, 4)
+P=generatePofw(w, lxs, phispace)
 plt.plot(lxs, P[3])
 plt.show()
 
 #%%
 N=2 #dimension of rho
-s=1000 #number of samples
+s=10 #number of samples
 nphi=4 #number of angleSteps
 
 nxs=51
@@ -242,19 +245,19 @@ xmax=5
 lxs=np.linspace(-xmax, xmax, nxs)
 [xs, ys]=np.meshgrid(lxs,lxs);
 
-P, W=generateDataset(N,s,nphi,lxs)
+P, W=generateDataset(N,s,phispace,lxs)
 
 start=time.time()
-P, W=generateDataset(N,s,nphi,lxs)
+P, W=generateDataset(N,s,phispace,lxs)
 end=time.time()
 
 print("elapsed with numba-nopython=True = %s" % (end-start))
 #%%
+
+
+
+
 '''
-
-
-
-
 
 
 

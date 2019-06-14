@@ -47,7 +47,7 @@ class simpleDeepNN2:
         # Add a softmax layer with 10 output units:
         self.model.add(layers.Dense(nxs*nxs, activation='linear'))
 #%%
-class smallDeepNN1:
+class smallDeepNN:
     def __init__(self, nxs, nphi):
         self.model=tf.keras.Sequential()
         
