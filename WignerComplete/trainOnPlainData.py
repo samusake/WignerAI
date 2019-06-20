@@ -26,13 +26,16 @@ from keras.models import model_from_json
 from tensorflow.keras.callbacks import ModelCheckpoint
 from sklearn.model_selection import train_test_split
 
+import keras.backend as K
+K.set_floatx('float16')
+
 import time
 from genSample import *
 from environment import *
 from model import *
 
 N=-1 #dimension of rho
-s=1000 #number of samples
+s=30000 #number of samples
 
 nxs=12
 xmax=5
@@ -41,14 +44,14 @@ lxs=np.linspace(-xmax, xmax, nxs)
 
 
 myenv=env(60,60)
-Ndata=1000
+Ndata=10000
 #%%
-#D,W = generatePlainDataset(N, s, lxs, myenv, Ndata)
-#np.save('data/D_s1000_nxs12_env6060', D)
-#np.save('data/W_s1000_nxs12_env6060', W)
+D,W = generatePlainDataset(N, s, lxs, myenv, Ndata)
+np.save('data/D_s30000_nxs12_env6060_Ndata50000', D)
+np.save('data/W_s30000_nxs12_env6060_Ndata50000', W)
 
-D=np.load('data/D_s1000_nxs12_env6060.npy')
-W=np.load('data/W_s1000_nxs12_env6060.npy')
+#D=np.load('data/D_s1000_nxs12_env6060.npy')
+#W=np.load('data/W_s1000_nxs12_env6060.npy')
 #%%
 Dinput=np.reshape(D,(s,Ndata))
 outputV=np.zeros((s,nxs*nxs))
@@ -58,7 +61,7 @@ for i in range(0, len(W)):
 
 ai=pureDataNN(nxs, Ndata)
 
-ai.model.compile(optimizer=keras.optimizers.RMSprop(0.001),#tf.train.GradientDescentOptimizer(0.005),#optimizer=tf.train.AdamOptimizer(0.001),
+ai.model.compile(optimizer=keras.optimizers.Adam(0.001),#tf.train.GradientDescentOptimizer(0.005),#optimizer=tf.train.AdamOptimizer(0.001),
     loss='mean_squared_error')
 
 checkpoint = ModelCheckpoint('models/ai_checkpoint.h5', monitor='val_loss', verbose=1, save_best_only=True, mode='min')

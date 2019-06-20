@@ -78,9 +78,10 @@ class pureDataNN:
         
         self.model.add(layers.Dense(Ndata, activation='relu'))
         # Add another:
-        self.model.add(layers.Dense(288, activation='relu'))
-        self.model.add(layers.Dense(128, activation='relu'))
-        self.model.add(layers.Dense(128, activation='relu'))
+        self.model.add(layers.Dense(10000, activation='relu'))
+        self.model.add(layers.Dense(5000, activation='relu'))
+        self.model.add(layers.Dense(2500, activation='relu'))
+        self.model.add(layers.Dense(256, activation='relu'))
         # Add a softmax layer with 10 output units:
         self.model.add(layers.Dense(nxs*nxs, activation='linear'))
 
