@@ -69,7 +69,27 @@ class env:
         W=np.real(W)
         W=sk.transform.rotate(W,randrot,resize=False);
         return(W)
-    
+ 
+    def setNewRandomWwithP(self, N, lowscalexaxis, lowscalephispace):
+        rho=randomDensityMatrix(N)
+        self.w=np.zeros((self.nxs,self.nxs))
+        for i in range(0,N):
+            for j in range(0,N):
+                self.w=self.w+rho[i,j]*wnm(i,j,self.lxs)
+        self.w=np.real(self.w)
+        randrot=np.random.randint(0,360)
+        self.w=sk.transform.rotate(self.w,randrot,resize=False);
+        
+        lowscalenxs=len(lowscalexaxis)
+        W=np.zeros((lowscalenxs,lowscalenxs))
+        for i in range(0,N):
+            for j in range(0,N):
+                W=W+rho[i,j]*wnm(i,j,lowscalexaxis)
+        W=np.real(W)
+        W=sk.transform.rotate(W,randrot,resize=False);
+        P=generatePofw(W,lowscalexaxis,lowscalephispace)
+        return(W,P) 
+        
     def measure(self):
         probdx=probdist(self.w,self.phi)
         cumdx=cumulant(probdx)
@@ -97,9 +117,23 @@ def generatePlainDataset(N, s, xaxis, myenv, Ndata):
         if i%100==0:
             k=i/s*100
             print("{0} %".format(k))
-        W[i]=myenv.setNewRandomW(np.random.randint(2,7),xaxis)
+        W[i]=myenv.setNewRandomW(np.random.randint(2,7),xaxis, withP)
         D[i]=randomWalk(Ndata,myenv)
     return((D,W))
+    
+def generatePlainDatasetwithP(N, s, xaxis, myenv, Ndata, phispace):
+    nxs=len(xaxis)
+    nphi=len(phispace)
+    W=np.zeros((s,nxs,nxs))
+    D=np.zeros((s, int(Ndata/2), 2))
+    P=np.zeros((s,nphi,nxs))
+    for i in range(0, s):
+        if i%100==0:
+            k=i/s*100
+            print("{0} %".format(k))
+        W[i], P[i]=myenv.setNewRandomWwithP(np.random.randint(2,7),xaxis, phispace)
+        D[i]=randomWalk(Ndata,myenv)
+    return((D,W,P))
 #%%
 '''
 myenv=env(100,100)

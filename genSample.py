@@ -220,7 +220,12 @@ w=np.real(w)
 P=generatePofw(w, lxs, phispace)
 plt.plot(lxs, P[0])
 plt.show()
+#%%
 
+fig, axs = plt.subplots()
+axs.contourf(px,py,P,levels=15)
+'''
+'''
 #%%
 N=2
 w=randomWignerMatrix(N,lxs)

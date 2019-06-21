@@ -27,10 +27,10 @@ from skimage.transform import radon, rescale
 from scipy.special import erf
 #%%
 N=-1 #dimension of rho
-s=100000 #number of samples
-nphi=60#45 #number of angleSteps
+stest=1000 #number of samples
+nphi=100#45 #number of angleSteps
 
-nxs=60
+nxs=100
 xmax=5
 lxs=np.linspace(-xmax, xmax, nxs)
 [xs, ys]=np.meshgrid(lxs,lxs);
@@ -38,19 +38,22 @@ lxs=np.linspace(-xmax, xmax, nxs)
 phispace=np.linspace(0,180,nphi, endpoint=False)
 [px, py]=np.meshgrid(lxs,phispace)
 #%%
-stest=10
-P, W=generateDatasetWithShiftAndSqueezed(-1,stest,phispace,lxs)
+#stest=10
+#P, W=generateDatasetWithShiftAndSqueezed(-1,stest,phispace,lxs)
+P=np.load('data/Ptest100000_100_100_shift_squeezed.npy')
+W=np.load('data/Wtest100000_100_100_shift_squeezed.npy')
+
 #%%
 P_radon=np.zeros((stest,nphi,nxs))
 for i in range(0,stest):
     P_radon[i]=generateP_radonofw(W[i],lxs,phispace)
 #%%
-json_file = open('models/60/ai_model.json', 'r')
+json_file = open('models/100/ai_model.json', 'r')
 loaded_model_json = json_file.read()
 json_file.close()
 ai = keras.models.model_from_json(loaded_model_json)
 # load weights into new model
-ai.load_weights("models/60/ai_checkpoint.h5")
+ai.load_weights("models/100/ai_checkpoint.h5")
 print("Loaded model from disk")
 
 #%%
