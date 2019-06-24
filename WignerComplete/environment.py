@@ -134,42 +134,4 @@ def generatePlainDatasetwithP(N, s, xaxis, myenv, Ndata, phispace):
         W[i], P[i]=myenv.setNewRandomWwithP(np.random.randint(2,7),xaxis, phispace)
         D[i]=randomWalk(Ndata,myenv)
     return((D,W,P))
-#%%
-'''
-myenv=env(100,100)
 
-nphi=12
-nxs=12
-xmax=5
-lxs=np.linspace(-xmax, xmax, nxs)
-[xs, ys]=np.meshgrid(lxs,lxs);
-
-phispace=np.linspace(0,180,nphi, endpoint=False)
-[px, py]=np.meshgrid(lxs,phispace)
-
-Ndata=100000
-Dataset=randomWalk(Ndata,myenv)
-
-phistep=180./nphi
-philist=[[] for x in range(0,2*nphi)]
-for i in Dataset:
-    philist[int(round(i[0]/phistep))%int(2*nphi)].append(i[1])
-
-fig, axs = plt.subplots()
-P=np.zeros((nphi,nxs))
-for i in range(0,nphi):
-    P[i]=np.histogram(philist[i]+philist[-(len(philist)-i)],  bins=np.linspace(lxs[0]-(lxs[1]-lxs[0])/2., lxs[-1]+(lxs[1]-lxs[0])/2., nxs+1))[0]
-    #maybe buggy
-    P[i]=P[i]/np.sum(P[i])
-axs.contourf(px,py,P)
-axs.set_ylabel('phi')
-
-fig2, axs2 = plt.subplots()
-w=wnm(0,0,lxs)+wnm(1,0,lxs)+wnm(0,1,lxs)+wnm(1,1,lxs)
-w=np.real(w)
-P=generatePofw(w, lxs, phispace)
-
-axs2.contourf(px,py,P)
-axs2.set_ylabel('phi')
-
-'''
