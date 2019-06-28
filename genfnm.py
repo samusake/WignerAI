@@ -61,13 +61,13 @@ def rho1modeps(ps, thetas, xs, nmax):
     fnm=genfnm(xs,nmp1)
     phase=np.zeros((2*nmax+1,Nangle))
     
-    for cntt in range(0:Nangle):#1:Nangle
-        #hier weitermachen
-        phase[:,cntt]=np.exp(1j*(-nmax:nmax)*thetas(cntt))
+    for cntt in range(0,Nangle):#1:Nangle
+        phase[:,cntt]=np.exp(1j*(np.arange(-nmax,(nmax+1)))*thetas(cntt))
     
-    for m=1:nmp1
-        for n=1:nmp1
-            for cntt=1:Nangle
+    for m in range(0,nmp1):#=1:nmp1
+        for n in range(0,nmp1):#=1:nmp1
+            for cntt in range(0,Nangle):#1:Nangle
+            #hääääh? hier weitermachens
             F(cntt).fnm(n+(m-1)*nmp1,:)=fnm(n,m,:)*phase(nmp1+n-m,cntt);
             end;
         end;

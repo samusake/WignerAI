@@ -27,10 +27,10 @@ from model import *
 #%%
 
 N=-1 #dimension of rho
-s=10000 #number of samples
-nphi=10#45 #number of angleSteps
+s=20000#number of samples
+nphi=12#45 #number of angleSteps
 
-nxs=10
+nxs=12
 xmax=5
 lxs=np.linspace(-xmax, xmax, nxs)
 [xs, ys]=np.meshgrid(lxs,lxs);
@@ -38,14 +38,19 @@ lxs=np.linspace(-xmax, xmax, nxs)
 phispace=np.linspace(0,180,nphi, endpoint=False)
 [px, py]=np.meshgrid(lxs,phispace)
 
-
 '''
+Pr,Wr=generateCompleteRandomDataset(s,phispace,lxs)
+np.save('data/P20000_random', Pr)
+np.save('data/W20000_random', Wr)
+
+
 P, W=generateDatasetWithShiftAndSqueezed(N,s,phispace,lxs)
 np.save('data/P10000_10_10_shift_squeezed', P)
 np.save('data/W10000_10_10_shift_squeezed', W)
 '''
 #%%
-
+Pr=np.load('data/P20000_random.npy')
+Wr=np.load('data/W20000_random.npy')
 P=np.load('data/P10000_10_10_shift_squeezed.npy')
 W=np.load('data/W10000_10_10_shift_squeezed.npy')
 
@@ -72,6 +77,12 @@ outputV=np.zeros((s,nxs*nxs))
 for i in range(0, len(P)):
     inputV[i]=P[i].flatten()
     outputV[i]=W[i].flatten()
+    
+inputVr=np.zeros((s,nxs*nphi))
+outputVr=np.zeros((s,nxs*nxs))
+for i in range(0, len(Pr)):
+    inputVr[i]=Pr[i].flatten()
+    outputVr[i]=Wr[i].flatten()
    
 testIn=np.zeros((stest,nxs*nphi))
 testOut=np.zeros((stest,nxs*nxs))
@@ -95,13 +106,15 @@ ai.model.count_params()
 
 ai=smallDeepNN(nxs,nphi)
 
-ai.model.compile(optimizer=keras.optimizers.RMSprop(0.001),#tf.train.GradientDescentOptimizer(0.005),#optimizer=tf.train.AdamOptimizer(0.001),
+ai.model.compile(optimizer=keras.optimizers.RMSprop(0.001,decay=0.0001),#tf.train.GradientDescentOptimizer(0.005),#optimizer=tf.train.AdamOptimizer(0.001),
     loss='mean_squared_error')
 
 checkpoint = ModelCheckpoint('models/ai_checkpoint.h5', monitor='val_loss', verbose=1, save_best_only=True, mode='min')
 callbacks_list = [checkpoint]
 
-history=ai.model.fit(inputV, outputV, epochs=30, batch_size=32, verbose=1, validation_split=0.1, callbacks=callbacks_list)
+history=ai.model.fit(inputV, outputV, epochs=20, batch_size=32, verbose=1, validation_split=0.1, callbacks=callbacks_list)
+history=ai.model.fit(inputVr, outputVr, epochs=30, batch_size=32, verbose=1, validation_split=0.1, callbacks=callbacks_list)
+
 ai.model.count_params()
 #%%
 ai.model.load_weights('models/ai_checkpoint.h5')

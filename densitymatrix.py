@@ -31,6 +31,7 @@ from tensorflow.keras.callbacks import ModelCheckpoint
 from genSample import *
 from model import *
 #%%
+#https://arxiv.org/pdf/1811.06654.pdf
 def randomWignerAndDensityMatrix(N, xaxis):
     nxs=len(xaxis)
     rho=randomDensityMatrix(N)

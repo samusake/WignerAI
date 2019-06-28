@@ -176,6 +176,15 @@ def generateDatasetWithShiftAndSqueezed(N,s,phispace,xaxis):
         W[i]=shift(W[i],shift=(np.random.randint(-nxs/6,nxs/6),np.random.randint(-nxs/6,nxs/6)))
         P[i]=generatePofw(W[i],xaxis,phispace)
     return((P,W))
+    
+def generateCompleteRandomDataset(s,phispace,xaxis):
+    nxs=len(xaxis)    
+    nphi=len(phispace)
+    W=np.random.rand(s,nxs,nxs)*4-2
+    P=np.zeros((s,nphi,nxs))
+    for k in range(0,s):
+        P[k]=generatePofw(W[k],xaxis,phispace)
+    return((P,W))
 #%%
 #%%
 '''
