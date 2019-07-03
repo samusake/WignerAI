@@ -6,7 +6,6 @@ from tensorflow.keras import layers
 from tensorflow import keras
 from keras.utils import to_categorical
 from keras.models import model_from_json
-
 #%%
 class simpleDeepNN:
     def __init__(self, nxs, nphi):
@@ -66,8 +65,27 @@ class DensityDeepNN:
         
         self.model.add(layers.Dense(nphi*nxs, activation='relu'))
         # Add another:
-        self.model.add(layers.Dense(128, activation='relu'))
-        self.model.add(layers.Dense(128, activation='relu'))
+        self.model.add(layers.Dense(400, activation='relu'))
+        self.model.add(layers.Dropout(0.2))
+        self.model.add(layers.Dense(400, activation='relu'))
+        self.model.add(layers.Dropout(0.2))
+        self.model.add(layers.Dense(400, activation='relu'))
+        self.model.add(layers.Dropout(0.2))
+        self.model.add(layers.Dense(400, activation='relu'))
+        self.model.add(layers.Dropout(0.2))
+        # Add a softmax layer with 10 output units:
+        self.model.add(layers.Dense(2*N*N, activation='linear'))
+#%%
+class smallDensityDeepNN:
+    def __init__(self, N, nxs, nphi):
+        self.model=tf.keras.Sequential()
+        
+        self.model.add(layers.Dense(nphi*nxs, activation='relu'))
+        # Add another:
+        self.model.add(layers.Dense(50, activation='relu'))
+        self.model.add(layers.Dropout(0.2))
+        self.model.add(layers.Dense(10, activation='relu'))
+        self.model.add(layers.Dropout(0.2))
         # Add a softmax layer with 10 output units:
         self.model.add(layers.Dense(2*N*N, activation='linear'))
 

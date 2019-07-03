@@ -14,12 +14,13 @@ import skimage as sk
 import time
 #%%
 
+#https://arxiv.org/pdf/1811.06654.pdf
 def randomDensityMatrix(dim): #http://www.qetlab.com/RandomDensityMatrix
     rho=np.random.rand(dim,dim) #https://arxiv.org/pdf/1010.3570.pdf
     rho.astype(complex)
     rho=rho + 1j*np.random.rand(dim,dim)
-    rho=rho*np.transpose(rho)
-    rho=rho/np.trace(rho)
+    rho=rho*np.transpose(rho) #hermitian + positiv semidefinite
+    rho=rho/np.trace(rho) #trace one
     return(rho)
 
 

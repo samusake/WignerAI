@@ -30,6 +30,10 @@ from tensorflow.keras.callbacks import ModelCheckpoint
 
 from genSample import *
 from model import *
+
+import keras.backend as K
+dtype='float16'
+K.set_floatx(dtype)
 #%%
 #https://arxiv.org/pdf/1811.06654.pdf
 def randomWignerAndDensityMatrix(N, xaxis):
@@ -39,7 +43,7 @@ def randomWignerAndDensityMatrix(N, xaxis):
     for i in range(0,N):
         for j in range(0,N):
             w=w+rho[i,j]*wnm(i,j,xaxis)
-    w=np.real(w)
+    #w=np.real(w)
     return(w,rho)
     
 def generateDatasetDensityMatrix(N,s,phispace,xaxis): #N-Dimension of rho, s-Number of samples, nphi-angular stepsize
@@ -56,7 +60,7 @@ def generateDatasetDensityMatrix(N,s,phispace,xaxis): #N-Dimension of rho, s-Num
     return((P,W,rho))
 #%%
 N=2 #dimension of rho
-s=10000 #number of samples
+s=100 #number of samples
 nphi=20#45 #number of angleSteps
 
 nxs=20
@@ -82,46 +86,32 @@ W=np.load('data/100000_20_20_density_N2/W.npy')
 rho=np.load('data/100000_20_20_density_N2/rho.npy')
 
 #%%
-fig=plt.figure(1)
-ax=fig.add_subplot(111)
-
-ax.contourf(px,py,P[2],levels=15)
-ax.set_xlabel('u')
-ax.set_ylabel('phi')
-
-fig=plt.figure(2)
-ax=fig.add_subplot(111)
-ax.contourf(xs,ys,np.real(W[3]),levels=15)
-ax.set_xlabel('X')
-ax.set_ylabel('Y')
-
-#%%
 stest=30
 Ptest, Wtest, rhotest=generateDatasetDensityMatrix(N,stest,phispace,lxs)
 
 #split real and complex
 rhotestsplit=np.stack((rhotest.real, rhotest.imag), -1)
-rhoback=rhosplit[:,:,:,0]+1j*rhosplit[:,:,:,1]
+#rhoback=rhosplit[:,:,:,0]+1j*rhosplit[:,:,:,1]
 #%%
 rhosplit=np.stack((rho.real, rho.imag), -1)
 
 inputV=np.zeros((s,nxs*nphi))
 outputV=np.zeros((s,2*N*N))
-for i in range(0, len(P)):
+for i in range(0, s):
     inputV[i]=P[i].flatten()
     outputV[i]=rhosplit[i].flatten()
    
 testIn=np.zeros((stest,nxs*nphi))
 testOut=np.zeros((stest,2*N*N))
-for i in range(0,len(Ptest)):
+for i in range(0,stest):
     testIn[i]=Ptest[i].flatten()
     testOut[i]=rhotestsplit[i].flatten()
 #%%
 
 #%%
 
-ai=DensityDeepNN(N, nxs,nphi)
-ai.model.compile(optimizer=keras.optimizers.RMSprop(0.001),#tf.train.GradientDescentOptimizer(0.005),#optimizer=tf.train.AdamOptimizer(0.001),
+ai=smallDensityDeepNN(N, nxs,nphi)
+ai.model.compile(optimizer=keras.optimizers.Adam(0.001),#decay=0.0001),#tf.train.GradientDescentOptimizer(0.005),#optimizer=tf.train.AdamOptimizer(0.001),
     loss='mean_squared_error')
 
 checkpoint = ModelCheckpoint('models/ai_checkpoint.h5', monitor='val_loss', verbose=1, save_best_only=True, mode='min')
