@@ -62,7 +62,7 @@ def generateDatasetDensityMatrix(N,s,phispace,xaxis): #N-Dimension of rho, s-Num
     return((P,W,rho))
 #%%
 N=5 #dimension of rho
-s=50000 #number of samples
+s=1000 #number of samples
 nphi=20#45 #number of angleSteps
 
 nxs=20
