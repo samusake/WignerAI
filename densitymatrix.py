@@ -28,6 +28,7 @@ from keras.utils import to_categorical
 from keras.models import model_from_json
 from tensorflow.keras.callbacks import ModelCheckpoint
 
+from WigToDensity import *
 from genSample import *
 from model import *
 
