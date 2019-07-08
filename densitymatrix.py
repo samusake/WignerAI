@@ -57,10 +57,11 @@ def generateDatasetDensityMatrix(N,s,phispace,xaxis): #N-Dimension of rho, s-Num
             k=i/s*100
         W[i],rho[i]=randomWignerAndDensityMatrix(N,xaxis)
         P[i]=generatePofw(W[i],xaxis,phispace)
+        rho[i]=rho1modeps(W[i],phispace, xaxis, N-1)
     return((P,W,rho))
 #%%
-N=2 #dimension of rho
-s=100 #number of samples
+N=5 #dimension of rho
+s=50000 #number of samples
 nphi=20#45 #number of angleSteps
 
 nxs=20
@@ -72,19 +73,19 @@ phispace=np.linspace(0,180,nphi, endpoint=False)
 [px, py]=np.meshgrid(lxs,phispace)
 
 
-'''
-Pr,Wr,rho=generateDatasetDensityMatrix(N,s,phispace,lxs)
 
-np.save('data/100000_20_20_density_N7/P', Pr)
-np.save('data/100000_20_20_density_N7/W', Wr)
-np.save('data/100000_20_20_density_N7/rho', rho)
-'''
+P,W,rho=generateDatasetDensityMatrix(N,s,phispace,lxs)
+
+np.save('data/100000_20_20_density_N5/P', P)
+np.save('data/100000_20_20_density_N5/W', W)
+np.save('data/100000_20_20_density_N5/rho', rho)
+
 #%%
-
-P=np.load('data/100000_20_20_density_N2/P.npy')
-W=np.load('data/100000_20_20_density_N2/W.npy')
-rho=np.load('data/100000_20_20_density_N2/rho.npy')
-
+'''
+P=np.load('data/100000_20_20_density_N5/P.npy')
+W=np.load('data/100000_20_20_density_N5/W.npy')
+rho=np.load('data/100000_20_20_density_N5/rho.npy')
+'''
 #%%
 stest=30
 Ptest, Wtest, rhotest=generateDatasetDensityMatrix(N,stest,phispace,lxs)

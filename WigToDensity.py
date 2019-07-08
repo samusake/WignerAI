@@ -43,7 +43,7 @@ def genfnm(xs,nmax):
            phi[0]=np.power(np.pi,-3/4)/x*np.exp(x**2/2)
            for cnt in range(1,nmax+1):#2:(nmax+1)
                n=cnt
-               phi[cnt]=sqrt(n/2)/x*phi[cnt-1]
+               phi[cnt]=np.sqrt(n/2)/x*phi[cnt-1]
 
         for cntn in range(0,nmax): #1:(nmax)
             n=cntn
@@ -63,12 +63,11 @@ def rho1modeps(ps, thetas, xs, nmax):
     Noutofbounds=0
     # generate pattern functions
     fnm=genfnm(xs,nmp1)
-    phase=np.zeros((2*nmax+1,Nangle))
-    
+    phase=np.zeros((2*nmax+1,Nangle),dtype=complex)
     for cntt in range(0,Nangle):#1:Nangle
         phase[:,cntt]=np.exp(1j*(np.arange(-nmax,(nmax+1)))*thetas[cntt])
     
-    F=np.zeros((Nangle,nmp1**2, Nangle))
+    F=np.zeros((Nangle,nmp1**2, Nangle),dtype=complex)
     for m in range(0,nmp1):#=1:nmp1
         for n in range(0,nmp1):#=1:nmp1
             for cntt in range(0,Nangle):#1:Nangle
@@ -77,14 +76,13 @@ def rho1modeps(ps, thetas, xs, nmax):
                 F[cntt,n+(m)*nmp1,:]=fnm[n,m,:]*phase[nmp1+n-m-1,cntt]
     #compute rho from joint probabilties and pattern functions see leonhardt's
     # papers
-    tmp=np.zeros((1,nmp1**2))
+    tmp=np.zeros((1,nmp1**2),dtype=complex)
     
     for cntt in range(0,Nangle):#1:Nangle
         ft=np.squeeze(F[cntt,:,:])#F(cntt).fnm);
-        tmp=tmp+np.transpose(ps[:,cntt]).dot(np.transpose(ft))
-    
+        tmp=tmp+np.conjugate(np.matmul(np.transpose(ps[:,cntt]), np.conjugate(np.transpose(ft))))
     rholin=tmp/Nangle
-    rho=np.reshape(rholin,(nmp1,nmp1))
+    rho=np.transpose(np.reshape(rholin,(nmp1,nmp1)))
     return(rho)
 
 '''

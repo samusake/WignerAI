@@ -25,7 +25,7 @@ def randomDensityMatrix(dim): #http://www.qetlab.com/RandomDensityMatrix
 
 
 def wnm(n,m,xs):
-    xs.astype(complex)
+    xs=xs.astype(complex)
     if np.size(xs[0])>np.size(xs[1]):
         xs=xs.transpose()
 
@@ -35,6 +35,7 @@ def wnm(n,m,xs):
     tmp=np.array(1)
     qp2=np.power(qs,2)+np.power(ps,2)
     qjp=qs-1j*ps
+    
     for cnt in range(n,0,-1): #n, n-1, .., 1.
         tmp=tmp*(m-n+cnt)/(n+1-cnt)
         Lag=tmp-2*qp2*Lag/cnt
