@@ -120,7 +120,7 @@ class imageDeepNN:
     def __init__(self, nxs, nxs_P, nphi):
         self.model=tf.keras.Sequential()
         
-        self.model.add(layers.Dense(nphi*nxs_p, activation='relu'))
+        self.model.add(layers.Dense(nphi*nxs_P, activation='relu'))
         # Add another:
         self.model.add(layers.Dense(2048, activation='relu'))
         self.model.add(layers.Dense(2048, activation='relu'))
