@@ -115,8 +115,17 @@ class pureDataNN_P:
         # Add a softmax layer with 10 output units:
         self.model.add(layers.Dense(nphi*nxs, activation='linear'))
 
-
-
+#%%
+class imageDeepNN:
+    def __init__(self, nxs, nxs_P, nphi):
+        self.model=tf.keras.Sequential()
+        
+        self.model.add(layers.Dense(nphi*nxs_p, activation='relu'))
+        # Add another:
+        self.model.add(layers.Dense(2048, activation='relu'))
+        self.model.add(layers.Dense(2048, activation='relu'))
+        # Add a softmax layer with 10 output units:
+        self.model.add(layers.Dense(nxs*nxs, activation='linear'))
 
 
 

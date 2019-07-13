@@ -28,9 +28,9 @@ from scipy.special import erf
 #%%
 N=-1 #dimension of rho
 stest=1000 #number of samples
-nphi=100#45 #number of angleSteps
+nphi=20#45 #number of angleSteps
 
-nxs=100
+nxs=20
 xmax=5
 lxs=np.linspace(-xmax, xmax, nxs)
 [xs, ys]=np.meshgrid(lxs,lxs);
@@ -39,21 +39,22 @@ phispace=np.linspace(0,180,nphi, endpoint=False)
 [px, py]=np.meshgrid(lxs,phispace)
 #%%
 #stest=10
-#P, W=generateDatasetWithShiftAndSqueezed(-1,stest,phispace,lxs)
-P=np.load('data/Ptest100000_100_100_shift_squeezed.npy')
-W=np.load('data/Wtest100000_100_100_shift_squeezed.npy')
+P, W=generateDataset(-1,stest,phispace,lxs)
+#P=np.load('data/P100000_12_12_shift_squeeze.npy')
+#W=np.load('data/W100000_12_12_shift_squeeze.npy')
 
 #%%
-P_radon=np.zeros((stest,nphi,nxs))
+P_radon=np.zeros((stest, 29,nphi))
 for i in range(0,stest):
-    P_radon[i]=generateP_radonofw(W[i],lxs,phispace)
+    #P_radon[i]=generateP_radonofw(W[i],lxs,phispace)
+    P_radon[i]=radon(W[i],theta=phispace)
 #%%
-json_file = open('models/100/ai_model.json', 'r')
+json_file = open('models/20/ai_model.json', 'r')
 loaded_model_json = json_file.read()
 json_file.close()
 ai = keras.models.model_from_json(loaded_model_json)
 # load weights into new model
-ai.load_weights("models/100/ai_checkpoint.h5")
+ai.load_weights("models/20/ai_checkpoint.h5")
 print("Loaded model from disk")
 
 #%%
