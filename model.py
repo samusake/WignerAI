@@ -82,9 +82,9 @@ class smallDensityDeepNN:
         
         self.model.add(layers.Dense(nphi*nxs, activation='relu'))
         # Add another:
-        self.model.add(layers.Dense(50, activation='relu'))
+        self.model.add(layers.Dense(200, activation='relu'))
         self.model.add(layers.Dropout(0.2))
-        self.model.add(layers.Dense(10, activation='relu'))
+        self.model.add(layers.Dense(100, activation='relu'))
         self.model.add(layers.Dropout(0.2))
         # Add a softmax layer with 10 output units:
         self.model.add(layers.Dense(2*N*N, activation='linear'))
