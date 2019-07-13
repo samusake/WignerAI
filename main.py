@@ -105,7 +105,7 @@ ai.model.compile(optimizer=keras.optimizers.Adam(0.001),#,decay=0.0001),#tf.trai
 checkpoint = ModelCheckpoint('models/ai_checkpoint.h5', monitor='val_loss', verbose=1, save_best_only=True, mode='min')
 callbacks_list = [checkpoint]
 
-history=ai.model.fit(inputV, outputV, epochs=100, batch_size=32, verbose=1, validation_split=0.1, callbacks=callbacks_list)
+history=ai.model.fit(inputV, outputV, epochs=1, batch_size=32, verbose=1, validation_split=0.1, callbacks=callbacks_list)
 
 ai.model.count_params()
 #%%
