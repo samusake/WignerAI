@@ -24,6 +24,9 @@ from tensorflow.keras.callbacks import ModelCheckpoint
 from genSample import *
 from model import *
 
+import keras.backend as K
+dtype='float16'
+K.set_floatx(dtype)
 #%%
 
 N=-1 #dimension of rho
