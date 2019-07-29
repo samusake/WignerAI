@@ -73,7 +73,7 @@ for i in range(0, len(P)):
     inputV[i]=P[i].flatten()
 #%%
 clf=ak.ImageClassifier()
-clf.fit(P[i],N[i])
+clf.fit(P,N)
 #%%
 model=tf.keras.Sequential()
 model.add(layers.Dense(nphi*nxs, activation='relu'))
