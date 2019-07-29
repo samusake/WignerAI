@@ -168,8 +168,13 @@ rhoai=np.reshape(rhoai, (30,N,N))
 #rhoai=np.concatenate(rhoai_orig)
 #rhoai=np.reshape(rhoai, (30,N,N))
 
+<<<<<<< HEAD
 
 
+=======
+
+
+>>>>>>> d0327f814f1ec280e6db5bd46f702882f7ebfd84
 fig, axs = plt.subplots(5, 6)
 
 contour=np.linspace(-0.5,1,50)
@@ -182,6 +187,7 @@ for i in range(0,6):
    
     axs[1,i].imshow(rhotest.real[i])
     axs[1,i].invert_yaxis()
+<<<<<<< HEAD
     #axs[1,i].axis('equal')
 
     axs[2,i].imshow(rhoai.real[i])
@@ -192,6 +198,18 @@ for i in range(0,6):
     axs[3,i].invert_yaxis()
     #axs[1,i].axis('equal')
 
+=======
+    #axs[1,i].axis('equal')
+
+    axs[2,i].imshow(rhoai.real[i])
+    axs[2,i].invert_yaxis()
+    #axs[2,i].axis('equal')
+    
+    axs[3,i].imshow(rhotest.imag[i])
+    axs[3,i].invert_yaxis()
+    #axs[1,i].axis('equal')
+
+>>>>>>> d0327f814f1ec280e6db5bd46f702882f7ebfd84
     axs[4,i].imshow(rhoai.imag[i])
     axs[4,i].invert_yaxis()
     #axs[2,i].axis('equal')

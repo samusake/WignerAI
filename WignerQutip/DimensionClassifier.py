@@ -26,6 +26,8 @@ from keras.utils import to_categorical
 from keras.models import model_from_json
 from tensorflow.keras.callbacks import ModelCheckpoint
 
+import autokeras as ak
+
 import keras.backend as K
 dtype='float16'
 K.set_floatx(dtype)
@@ -41,47 +43,55 @@ lxs=np.linspace(-xmax, xmax, nxs)
 phispace=np.linspace(0,180,nphi, endpoint=False)
 [px, py]=np.meshgrid(lxs,phispace)
 
+Nmax=20
 #%%
 '''
 W=np.zeros((s,nxs,nxs))
 P=np.zeros((s,nphi,nxs))
+N=np.zeros((s,Nmax))
 for i in range(0,s):        
     if i%100==0:
         k=i/s*100
         print("{0} %".format(k))
+    N_current=np.random.randint(Nmax)+1
+    rho=rand_dm(N_current)
     
-    rho=rand_dm(np.random.randint(10)+1)
+    N[i,N_current-1]=1
     W[i]=wigner(rho,lxs,lxs)
     P[i]=radon(W[i],theta=phispace, circle=True)
-np.save('data/P42', P)
-np.save('data/W42', W)
+np.save('data/P42_N', P)
+np.save('data/W42_N', W)
+np.save('data/N42_N', N)
 '''
 #%%
-P=np.load('data/P42.npy')
-W=np.load('data/W42.npy')
+P=np.load('data/P42_N.npy')
+W=np.load('data/W42_N.npy')
+N=np.load('data/N42_N.npy')
 #%%
 inputV=np.zeros((s,nxs*nphi))
-outputV=np.zeros((s,nxs*nxs))
 for i in range(0, len(P)):
     inputV[i]=P[i].flatten()
-    outputV[i]=W[i].flatten()
+#%%
+clf=ak.ImageClassifier()
+clf.fit(P[i],N[i])
 #%%
 model=tf.keras.Sequential()
 model.add(layers.Dense(nphi*nxs, activation='relu'))
 #model.add(layers.Dense(3528, activation='relu'))
-model.add(layers.Dense(1764, activation='relu'))
-model.add(layers.Dense(1764, activation='relu'))
+model.add(layers.Dense(200, activation='relu'))
+model.add(layers.Dense(200, activation='relu'))
 
-model.add(layers.Dense(nxs*nxs, activation='linear'))
+model.add(layers.Dense(Nmax, activation='softmax'))
 #%%
 model.compile(optimizer=keras.optimizers.Adam(0.001),#,decay=0.0001),#tf.train.GradientDescentOptimizer(0.005),#optimizer=tf.train.AdamOptimizer(0.001),
-    loss='mean_squared_error')
+    loss='binary_crossentropy', metrics=['categorical_accuracy'])
 
-checkpoint = ModelCheckpoint('ai_checkpoint.h5', monitor='val_loss', verbose=1, save_best_only=True, mode='min')
+checkpoint = ModelCheckpoint('ai_checkpoint.h5', monitor='val_binary_crossentropy', verbose=1, save_best_only=True, mode='min')
 callbacks_list = [checkpoint]
 
-history=model.fit(inputV, outputV, epochs=1, batch_size=32, verbose=1, validation_split=0.1, callbacks=callbacks_list)
+history=model.fit(inputV, N, epochs=1, batch_size=32, verbose=1, validation_split=0.1, callbacks=callbacks_list)
 #%%
+plt.figure(1)
 plt.semilogy(history.history['loss'])
 plt.semilogy(history.history['val_loss'])
 
@@ -90,31 +100,12 @@ plt.ylabel('Loss')
 plt.xlabel('Epoch')
 plt.legend(['Train', 'Test'], loc='upper left')
 plt.show()
-
-#%%
-Wai=model.predict(inputV)
-inputV=None
-outputV=None
-Wai=np.concatenate(Wai)
-Wai=np.reshape(Wai, (s,nxs,nxs))
-#%%
-fig, axs = plt.subplots(3, 6)
-
-for i in range(0,6):
-    axs[0,i].contourf(P[i],levels=15)
-    axs[0,i].set_ylabel('phi')
-    #axs[0,i].axis('equal')
-   
-    axs[1,i].contourf(xs,ys,W[i]/np.mean(W[i]),levels=15)
-    axs[1,i].set_ylabel('Y')
-    #axs[1,i].axis('equal')
-
-    axs[2,i].contourf(xs,ys,Wai[i]/np.mean(W[i]),levels=15)
-    axs[2,i].set_xlabel('X')
-    axs[2,i].set_ylabel('Y')
-    #axs[2,i].axis('equal')
-axs[0,3].set_title('Probability distributions')
-axs[1,3].set_title('Theoretical wigner distribution')
-axs[2,3].set_title('AI prediction of wigner distribution')
-
+plt.figure(2)
+plt.semilogy(history.history['categorical_accuracy'])
+plt.title('Model accuracy')
+plt.ylabel('accuracy')
+plt.xlabel('Epoch')
 plt.show()
+
+#%%
+Nai=model.predict(inputV)
