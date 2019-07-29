@@ -45,9 +45,15 @@ lxs=np.linspace(-xmax, xmax, nxs)
 phispace=np.linspace(0,180,nphi, endpoint=False)
 [px, py]=np.meshgrid(lxs,phispace)
 
+
+P, W=generateDatasetWithShiftAndSqueezed(N,s,phispace,lxs)
+np.save('data/P10000_10_10_shift_squeezed', P)
+np.save('data/W10000_10_10_shift_squeezed', W)
+
+'''
 P=np.load('data/P10000_10_10_shift_squeezed.npy')
 W=np.load('data/W10000_10_10_shift_squeezed.npy')
-
+'''
 inputV=np.zeros((s,nxs*nphi))
 outputV=np.zeros((s,nxs*nxs))
 for i in range(0, len(P)):
@@ -56,46 +62,47 @@ for i in range(0, len(P)):
 #%%
 ai=smallDeepNN1(nxs,nphi)
 
-ai.model.compile(optimizer=keras.optimizers.Adam(0.001,decay=0.0001),#tf.train.GradientDescentOptimizer(0.005),#optimizer=tf.train.AdamOptimizer(0.001),
+ai.model.compile(optimizer=keras.optimizers.SGD(),#tf.train.GradientDescentOptimizer(0.005),#optimizer=tf.train.AdamOptimizer(0.001),
     loss='mean_squared_error')
 
 checkpoint = ModelCheckpoint('models/ai_checkpoint.h5', monitor='val_loss', verbose=1, save_best_only=True, mode='min')
 callbacks_list = [checkpoint]
 
-history1=ai.model.fit(inputV, outputV, epochs=40, batch_size=32, verbose=1, validation_split=0.1, callbacks=callbacks_list)
+history1=ai.model.fit(inputV, outputV, epochs=20, batch_size=32, verbose=1, validation_split=0.1, callbacks=callbacks_list)
 c1=ai.model.count_params()
 #%%
-ai=smallDeepNN1(nxs,nphi)
+ai=smallDeepNN2(nxs,nphi)
 
-ai.model.compile(optimizer=keras.optimizers.Adam(0.001,decay=0.001),#tf.train.GradientDescentOptimizer(0.005),#optimizer=tf.train.AdamOptimizer(0.001),
+ai.model.compile(optimizer=keras.optimizers.SGD(),#tf.train.GradientDescentOptimizer(0.005),#optimizer=tf.train.AdamOptimizer(0.001),
     loss='mean_squared_error')
 
 checkpoint = ModelCheckpoint('models/ai_checkpoint.h5', monitor='val_loss', verbose=1, save_best_only=True, mode='min')
 callbacks_list = [checkpoint]
 
-history2=ai.model.fit(inputV, outputV, epochs=40, batch_size=32, verbose=1, validation_split=0.1, callbacks=callbacks_list)
+history2=ai.model.fit(inputV, outputV, epochs=20, batch_size=32, verbose=1, validation_split=0.1, callbacks=callbacks_list)
 c2=ai.model.count_params()
-#%%
-ai=smallDeepNN1(nxs,nphi)
 
-ai.model.compile(optimizer=keras.optimizers.Adam(0.001,decay=0.01),#tf.train.GradientDescentOptimizer(0.005),#optimizer=tf.train.AdamOptimizer(0.001),
+#%%
+ai=smallDeepNN3(nxs,nphi)
+
+ai.model.compile(optimizer=keras.optimizers.SGD(),#tf.train.GradientDescentOptimizer(0.005),#optimizer=tf.train.AdamOptimizer(0.001),
     loss='mean_squared_error')
 
 checkpoint = ModelCheckpoint('models/ai_checkpoint.h5', monitor='val_loss', verbose=1, save_best_only=True, mode='min')
 callbacks_list = [checkpoint]
 
-history3=ai.model.fit(inputV, outputV, epochs=40, batch_size=32, verbose=1, validation_split=0.1, callbacks=callbacks_list)
+history3=ai.model.fit(inputV, outputV, epochs=20, batch_size=32, verbose=1, validation_split=0.1, callbacks=callbacks_list)
 c3=ai.model.count_params()
 #%%
-ai=smallDeepNN1(nxs,nphi)
+ai=smallDeepNN4(nxs,nphi)
 
-ai.model.compile(optimizer=keras.optimizers.Adam(0.001),#tf.train.GradientDescentOptimizer(0.005),#optimizer=tf.train.AdamOptimizer(0.001),
+ai.model.compile(optimizer=keras.optimizers.SGD(),#tf.train.GradientDescentOptimizer(0.005),#optimizer=tf.train.AdamOptimizer(0.001),
     loss='mean_squared_error')
 
 checkpoint = ModelCheckpoint('models/ai_checkpoint.h5', monitor='val_loss', verbose=1, save_best_only=True, mode='min')
 callbacks_list = [checkpoint]
 
-history4=ai.model.fit(inputV, outputV, epochs=40, batch_size=32, verbose=1, validation_split=0.1, callbacks=callbacks_list)
+history4=ai.model.fit(inputV, outputV, epochs=20, batch_size=32, verbose=1, validation_split=0.1, callbacks=callbacks_list)
 c4=ai.model.count_params()
 #%%
 ai.model.load_weights('models/ai_checkpoint.h5')
@@ -116,7 +123,7 @@ plt.semilogy(history4.history['val_loss'])
 plt.title('Model loss')
 plt.ylabel('Loss')
 plt.xlabel('Epoch')
-plt.legend(['Adam, decay=0,0001', 'Adam, decay=0,001', 'Adam, decay=0,01', 'Adam, decay=0'], loc='upper right')
+plt.legend(['256-128-128', '256-256', '256-128', '512-128'], loc='upper right')
 plt.show()
 
 print("#Param1=", c1)

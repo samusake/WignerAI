@@ -96,7 +96,7 @@ history=ai.model.fit(P_input, outputV, epochs=1, batch_size=32, verbose=1, valid
 ai.model.count_params()
 '''
 #%%
-
+'''
 ai=imageDeepNN(nxs,nxs_P,nphi)
 
 ai.model.compile(optimizer=keras.optimizers.Adam(0.001),#,decay=0.0001),#tf.train.GradientDescentOptimizer(0.005),#optimizer=tf.train.AdamOptimizer(0.001),
@@ -108,8 +108,10 @@ callbacks_list = [checkpoint]
 history=ai.model.fit(inputV, outputV, epochs=500, batch_size=32, verbose=1, validation_split=0.1, callbacks=callbacks_list)
 
 ai.model.count_params()
+
 #%%
-ai.model.load_weights('models/ai_checkpoint.h5')
+ai.model.load_weights('models/images42/ai_checkpoint.h5')
+
 #%%
 
 with open('models/ai_model.json', 'w') as json_file:
@@ -117,7 +119,9 @@ with open('models/ai_model.json', 'w') as json_file:
 ai.model.save_weights('models/ai_weights.h5')
 with open('models/ai_history.json', 'w') as json_file:
     json.dump(history.history, json_file)
+'''
 #save AI
+
 #%%
 plt.semilogy(history.history['loss'])
 plt.semilogy(history.history['val_loss'])
@@ -129,9 +133,9 @@ plt.legend(['Train', 'Test'], loc='upper left')
 plt.show()
 
 #%%
-Wai_orig=ai.model.predict(testIn)
+Wai_orig=ai.predict(inputV)
 Wai=np.concatenate(Wai_orig)
-Wai=np.reshape(Wai, (30,nxs,nxs))
+Wai=np.reshape(Wai, (s,nxs,nxs))
 
 fig, axs = plt.subplots(3, 6, sharex='col', sharey='row')
 
@@ -145,7 +149,7 @@ for i in range(0,6):
     axs[1,i].set_ylabel('Y')
     #axs[1,i].axis('equal')
 
-    axs[2,i].contourf(xs,ys,W[i],contour)
+    axs[2,i].contourf(xs,ys,Wai[i],contour)
     axs[2,i].set_xlabel('X')
     axs[2,i].set_ylabel('Y')
     #axs[2,i].axis('equal')
