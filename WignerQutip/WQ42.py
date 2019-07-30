@@ -30,7 +30,7 @@ import keras.backend as K
 dtype='float16'
 K.set_floatx(dtype)
 #%%
-s=20000#number of samples
+s=100000#number of samples
 nphi=42#45 #number of angleSteps
 
 nxs=42
@@ -50,7 +50,7 @@ for i in range(0,s):
         k=i/s*100
         print("{0} %".format(k))
     
-    rho=rand_dm(np.random.randint(10)+1)
+    rho=rand_dm(np.random.randint(5)+1)
     W[i]=wigner(rho,lxs,lxs)
     P[i]=radon(W[i],theta=phispace, circle=True)
 np.save('data/P42', P)
@@ -68,7 +68,7 @@ for i in range(0, len(P)):
 #%%
 model=tf.keras.Sequential()
 model.add(layers.Dense(nphi*nxs, activation='relu'))
-#model.add(layers.Dense(3528, activation='relu'))
+model.add(layers.Dense(3528, activation='relu'))
 model.add(layers.Dense(1764, activation='relu'))
 model.add(layers.Dense(1764, activation='relu'))
 
@@ -80,7 +80,13 @@ model.compile(optimizer=keras.optimizers.Adam(0.001),#,decay=0.0001),#tf.train.G
 checkpoint = ModelCheckpoint('ai_checkpoint.h5', monitor='val_loss', verbose=1, save_best_only=True, mode='min')
 callbacks_list = [checkpoint]
 
-history=model.fit(inputV, outputV, epochs=1, batch_size=32, verbose=1, validation_split=0.1, callbacks=callbacks_list)
+history=model.fit(inputV, outputV, epochs=300, batch_size=32, verbose=1, validation_split=0.1, callbacks=callbacks_list)
+#%%
+with open('models/randomWigner_Nsmaller5/model.json', 'w') as json_file:
+    json_file.write(model.to_json())
+model.save_weights('models/randomWigner_Nsmaller5/weights.h5')
+with open('models/randomWigner_Nsmaller5/history.json', 'w') as json_file:
+    json.dump(history.history, json_file)
 #%%
 plt.semilogy(history.history['loss'])
 plt.semilogy(history.history['val_loss'])
