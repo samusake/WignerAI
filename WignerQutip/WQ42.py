@@ -80,7 +80,7 @@ model.compile(optimizer=keras.optimizers.Adam(0.001),#,decay=0.0001),#tf.train.G
 checkpoint = ModelCheckpoint('ai_checkpoint.h5', monitor='val_loss', verbose=1, save_best_only=True, mode='min')
 callbacks_list = [checkpoint]
 
-history=model.fit(inputV, outputV, epochs=300, batch_size=32, verbose=1, validation_split=0.1, callbacks=callbacks_list)
+history=model.fit(inputV, outputV, epochs=300, batch_size=256, verbose=1, validation_split=0.1, callbacks=callbacks_list)
 #%%
 with open('models/randomWigner_Nsmaller5/model.json', 'w') as json_file:
     json_file.write(model.to_json())

@@ -12,6 +12,7 @@ from scipy.interpolate import interp1d
 from scipy.stats import gaussian_kde
 from sklearn.metrics import mean_squared_error
 
+import matplotlib
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import skimage as sk
@@ -42,24 +43,7 @@ phispace=np.linspace(0,180,nphi, endpoint=False)
 [px, py]=np.meshgrid(lxs,phispace)
 
 N=5 #number of qubits: n, N=2^n
-#%%
-'''
-W=np.zeros((s,nxs,nxs))
-P=np.zeros((s,nphi,nxs))
-rho=np.zeros((s,N,N),dtype=complex)#,Nmax))
-for i in range(0,s):        
-    if i%100==0:
-        k=i/s*100
-        print("{0} %".format(k))
-    rho_current=rand_dm(N)
-    rho[i]=rho_current.full()
-    W[i]=wigner(rho_current,lxs,lxs)
-    P[i]=radon(W[i],theta=phispace, circle=True)
 
-np.save('data/P42_rho', P)
-np.save('data/rho42_rho', rho)
-np.save('data/W42_rho', W)
-'''
 #%%
 
 P=np.load('data/P42_rho.npy')
@@ -73,38 +57,28 @@ for i in range(0, len(P)):
     inputV[i]=P[i].flatten()
     outputV[i]=rhosplit[i].flatten()
 #%%
-model=tf.keras.Sequential()
-        
-model.add(layers.Dense(nphi*nxs, activation='relu'))
-model.add(layers.Dense(800, activation='relu'))
-model.add(layers.Dense(800, activation='relu'))
-model.add(layers.Dense(2*N*N, activation='linear'))
+json_file = open('models/density_5/5_model.json', 'r')
+loaded_model_json = json_file.read()
+json_file.close()
+ai = keras.models.model_from_json(loaded_model_json)
+# load weights into new model
+ai.load_weights("models/density_5/5_weights.h5")
+print("Loaded model from disk")
 
-model.compile(optimizer=keras.optimizers.Adam(0.001),#decay=0.0001),#tf.train.GradientDescentOptimizer(0.005),#optimizer=tf.train.AdamOptimizer(0.001),
-    loss='mean_squared_error')
 
-checkpoint = ModelCheckpoint('models/ai_checkpoint.h5', monitor='val_loss', verbose=1, save_best_only=True, mode='min')
-callbacks_list = [checkpoint]
 
-history=model.fit(inputV, outputV, epochs=5, batch_size=256, verbose=1, validation_split=0.1, callbacks=callbacks_list)
+f = open('models/density_5/5_history.json', 'r')
+history=json.load(f)
+f.close()
+    
 #%%
-model.load_weights('models/ai_checkpoint.h5')
-#%%
-'''
-with open('models/density_5/5_model.json', 'w') as json_file:
-    json_file.write(model.to_json())
-model.save_weights('models/density_5/5_weights.h5')
-with open('models/density_5/5_history.json', 'w') as json_file:
-    json.dump(history.history, json_file)
-'''
-#%%
-plt.semilogy(history.history['loss'])
-plt.semilogy(history.history['val_loss'])
+plt.semilogy(history['loss'])
+plt.semilogy(history['val_loss'])
 
-plt.title('Model loss')
+#plt.title('Model loss')
 plt.ylabel('Loss')
 plt.xlabel('Epoch')
-plt.legend(['Train', 'Test'], loc='upper left')
+plt.legend(['Train', 'Test'], loc='upper right')
 plt.show()
 #%%
 rhoai_orig=model.predict(inputV[int(s-0.1*s):s])
@@ -126,6 +100,9 @@ rhotest=rho[int(s-0.1*s):s]
 #%%
 fig, axs = plt.subplots(5, 6, sharex='col', sharey='row')
 
+font={'size'   : '20'}
+matplotlib.rc('font', **font)
+
 contour=np.linspace(-0.5,1,50)
 for i in range(0,6):
     axs[0,i].contourf(px,py,Ptest[i])
@@ -143,11 +120,16 @@ for i in range(0,6):
     axs[4,i].imshow(rhoai.imag[i])
     #axs[2,i].axis('equal')
 axs[0,0].set_ylabel('θ')
-axs[0,3].set_title('Sinogram')
-axs[1,3].set_title('Theoretical density matrix - real values')
-axs[2,3].set_title('AI prediction of density matrix - real values')
-axs[3,3].set_title('Theoretical density matrix - complex values')
-axs[4,3].set_title('AI prediction of density matrix - complex values')
+axs[0,2].set_title('Sinogram')
+axs[1,2].set_title('Theoretical density matrix - real values')
+axs[2,2].set_title('AI prediction of density matrix - real values')
+axs[3,2].set_title('Theoretical density matrix - complex values')
+axs[4,2].set_title('AI prediction of density matrix - complex values')
 
 plt.show()
-
+#%%
+f=0
+for i in range(0, len(rhoai)):
+    f=f+fidelity(Qobj(rhotest[i]),Qobj(rhoai[i]))
+f=f/len(rhoai)
+print(f)
