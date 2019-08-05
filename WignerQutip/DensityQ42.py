@@ -77,7 +77,9 @@ model=tf.keras.Sequential()
         
 model.add(layers.Dense(nphi*nxs, activation='relu'))
 model.add(layers.Dense(800, activation='relu'))
+model.add(layers.Dropout(0.25))
 model.add(layers.Dense(800, activation='relu'))
+model.add(layers.Dropout(0.25))
 model.add(layers.Dense(2*N*N, activation='linear'))
 
 model.compile(optimizer=keras.optimizers.Adam(0.001),#decay=0.0001),#tf.train.GradientDescentOptimizer(0.005),#optimizer=tf.train.AdamOptimizer(0.001),
@@ -86,7 +88,7 @@ model.compile(optimizer=keras.optimizers.Adam(0.001),#decay=0.0001),#tf.train.Gr
 checkpoint = ModelCheckpoint('models/ai_checkpoint.h5', monitor='val_loss', verbose=1, save_best_only=True, mode='min')
 callbacks_list = [checkpoint]
 
-history=model.fit(inputV, outputV, epochs=5, batch_size=256, verbose=1, validation_split=0.1, callbacks=callbacks_list)
+history=model.fit(inputV, outputV, epochs=50, batch_size=256, verbose=1, validation_split=0.1, callbacks=callbacks_list)
 #%%
 model.load_weights('models/ai_checkpoint.h5')
 #%%

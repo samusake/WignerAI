@@ -82,11 +82,13 @@ callbacks_list = [checkpoint]
 
 history=model.fit(inputV, outputV, epochs=300, batch_size=256, verbose=1, validation_split=0.1, callbacks=callbacks_list)
 #%%
+'''
 with open('models/randomWigner_Nsmaller5/model.json', 'w') as json_file:
     json_file.write(model.to_json())
 model.save_weights('models/randomWigner_Nsmaller5/weights.h5')
 with open('models/randomWigner_Nsmaller5/history.json', 'w') as json_file:
     json.dump(history.history, json_file)
+'''
 #%%
 plt.semilogy(history.history['loss'])
 plt.semilogy(history.history['val_loss'])

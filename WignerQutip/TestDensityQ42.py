@@ -20,6 +20,10 @@ import skimage as sk
 import time
 import json
 
+
+#from WigToDensity import *
+import matlab.engine
+
 import tensorflow as tf
 from tensorflow.keras import layers
 from tensorflow import keras
@@ -30,6 +34,8 @@ from tensorflow.keras.callbacks import ModelCheckpoint
 import keras.backend as K
 dtype='float16'
 K.set_floatx(dtype)
+
+eng=matlab.engine.start_matlab()
 #%%
 s=100000#number of samples
 nphi=42#45 #number of angleSteps
@@ -81,7 +87,7 @@ plt.xlabel('Epoch')
 plt.legend(['Train', 'Test'], loc='upper right')
 plt.show()
 #%%
-rhoai_orig=model.predict(inputV[int(s-0.1*s):s])
+rhoai_orig=ai.predict(inputV[int(s-0.1*s):s])
 rhoai_orig=np.concatenate(rhoai_orig)
 rhoai_real=np.zeros(int(len(rhoai_orig)/2))
 rhoai_imag=np.zeros(int(len(rhoai_orig)/2))
@@ -133,3 +139,43 @@ for i in range(0, len(rhoai)):
     f=f+fidelity(Qobj(rhotest[i]),Qobj(rhoai[i]))
 f=f/len(rhoai)
 print(f)
+#%%
+np.trace(rhoai[0])
+#%%
+thetas=np.linspace(0,np.pi,nphi, endpoint=False)
+rhopetpet=np.zeros((int(0.1*s), N,N), dtype=complex)
+thetas_ml=matlab.double(thetas.tolist())
+lxs_ml=matlab.double(lxs.tolist())
+for i in range(0, 6):#int(0.1*s)):
+    P_ml=matlab.double(Ptest[i].tolist())
+    rhopetpet[i]=eng.rho1modeps(P_ml, thetas_ml, lxs_ml, float(N-1))
+#%%
+fig, axs = plt.subplots(5, 6, sharex='col', sharey='row')
+
+font={'size'   : '12'}
+matplotlib.rc('font', **font)
+
+contour=np.linspace(-0.5,1,50)
+for i in range(0,6):
+    axs[0,i].contourf(px,py,Ptest[i])
+    #axs[0,i].axis('equal')
+   
+    axs[1,i].imshow(rhotest.real[i])
+    #axs[1,i].axis('equal')
+
+    axs[2,i].imshow(rhopetpet.real[i])
+    #axs[2,i].axis('equal')
+    
+    axs[3,i].imshow(rhotest.imag[i])
+    
+    #axs[1,i].axis('equal')
+    axs[4,i].imshow(rhopetpet.imag[i])
+    #axs[2,i].axis('equal')
+axs[0,0].set_ylabel('θ')
+axs[0,2].set_title('Sinogram')
+axs[1,2].set_title('Theoretical density matrix - real values')
+axs[2,2].set_title('prediction of density matrix - real values')
+axs[3,2].set_title('Theoretical density matrix - complex values')
+axs[4,2].set_title('prediction of density matrix - complex values')
+
+plt.show()
